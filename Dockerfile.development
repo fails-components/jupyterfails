@@ -1,0 +1,19 @@
+# syntax = docker/dockerfile:1.2
+FROM node:20-bookworm
+
+ARG ENV
+
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y git pipx
+
+RUN mkdir -p ~/miniconda3 &&wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh && bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 && rm -rf ~/miniconda3/miniconda.sh && ~/miniconda3/bin/conda init bash
+
+RUN pipx install copier
+
+RUN ~/miniconda3/bin/conda install -c conda-forge -y jupyterlab
+
+RUN ~/miniconda3/bin/conda create -y -n jupyterlab-ext --override-channels --strict-channel-priority -c conda-forge -c nodefaults jupyterlab=4 nodejs=18 git copier=7 jinja2-time
+
+
+
+
+

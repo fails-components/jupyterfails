@@ -1,0 +1,56 @@
+@import url('base.css');
+
+
+.fl-jp-AppletView .fl-jp-Applet .jp-OutputArea {
+    display: block;
+}
+
+.fl-jp-AppletView .fl-jp-Applet {
+    overflow-y: auto;
+}
+
+
+.fl-jp-AppletView {
+    overflow-y: auto;
+}
+
+.fl-jp-AppletView .jp-collapseHeadingButton {
+    display: none;
+}
+
+.fl-jp-AppletView .jp-InternalAnchorLink {
+    display: none;
+}
+
+.fl-jp-AppletViewToolbar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    box-shadow: none;
+    border-bottom: none;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title {
+    box-sizing: border-box;
+    padding: 0px 10px;
+    background: #f5f5f5;
+    border: 2px solid #c0c0c0;
+    border-bottom: none;
+    font: 12px Helvetica, Arial, sans-serif;
+    min-height: 22px;
+    max-height: 22px;
+    min-width: 35px;
+    line-height: 20px;
+    margin: 0px;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title .lm-AccordionPanel-titleCollapser:before {
+    content: '\25B2';
+    position: absolute;
+    right: 10px;
+}
+
+.lm-AccordionPanel .lm-AccordionPanel-title.lm-mod-expanded .lm-AccordionPanel-titleCollapser:before {
+    content: '\25BC';
+}
+

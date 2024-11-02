@@ -1,0 +1,31 @@
+{
+  "jupyter.lab.shortcuts": [],
+  "title": "Applet view for Fails",
+  "description": "@fails-components/jupyter-applet-view settings.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "jupyter.lab.menus": {
+    "context": [
+      {
+        "type": "separator",
+        "selector": ".jp-Notebook .jp-Cell",
+        "rank": 70
+      },
+      {
+        "command": "fails-components-jupyter-applet-view:add_to_view",
+        "selector": ".jp-Notebook .jp-Cell",
+        "rank": 71
+      }
+    ]
+  },
+  "jupyter.lab.toolbars": {
+    "Cell": [
+      {
+        "name": "add_to_view",
+        "command": "fails-components-jupyter-applet-view:add_to_view",
+        "rank": 10
+      }
+    ]
+  }
+}

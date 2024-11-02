@@ -1,0 +1,19 @@
+{
+  "jupyter-lite-schema-version": 0,
+  "jupyter-config-data": {
+    "appName": "JupyterLite",
+    "appUrl": "./lab",
+    "baseUrl": "./",
+    "defaultKernelName": "python",
+    "faviconUrl": "./lab/favicon.ico",
+    "federated_extensions": [],
+    "disabledExtensions": ["@jupyterlite/server-extension:localforage",
+      "@jupyterlite/server-extension:localforage-memory-storage",
+      "@jupyterlite/server-extension:settings",
+      "@jupyterlite/server-extension:contents"],
+    "enableMemoryStorage": true,
+    "settingsStorageName": "failsJupyterDev",
+    "settingsStorageDrivers": ["memoryStorageDriver"],
+    "contentsStorageDrivers": ["memoryStorageDriver"]
+  }
+}

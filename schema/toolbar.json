@@ -1,0 +1,8 @@
+{
+  "jupyter.lab.shortcuts": [],
+  "title": "Toolbar for applet view provided for Fails",
+  "description": "@fails-components/jupyter-applet-view toolbar.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}
