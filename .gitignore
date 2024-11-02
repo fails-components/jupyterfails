@@ -127,3 +127,5 @@ dmypy.json
 #jupyterlite output
 jupyterLiteFailsOut
 .jupyterlite.doit.db
+
+fails_components_jupyter_applet_view
