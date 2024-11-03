@@ -6,6 +6,7 @@ import {
   ISharedText,
   ISharedUnrecognizedCell
 } from '@jupyter/ydoc';
+import { JupyterFrontEndPlugin } from '@jupyterlab/application';
 import { ICellModel } from '@jupyterlab/cells';
 import { CodeEditor } from '@jupyterlab/codeeditor';
 import { IChangedArgs } from '@jupyterlab/coreutils';
@@ -661,3 +662,7 @@ export class CellModelRemote implements ICellModel {
     >
   >(this);
 }
+
+const plugins: JupyterFrontEndPlugin<void>[] = [];
+
+export default plugins;
