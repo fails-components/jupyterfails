@@ -1,0 +1,15 @@
+{
+    "extends": "./tsconfigbase",
+    "include": [
+      "*",
+      ".eslintrc.js",
+      "packages/**/src/**/*",
+      "packages/**/test/**/*",
+      "packages/**/style/**/*",
+      "packages/**/*.config.js",
+      "py/**/src/**/*",
+      "scripts/*",
+      "ui-tests/test/**/*",
+      "ui-tests/*.config.js"
+    ]
+  }

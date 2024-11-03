@@ -1,15 +1,12 @@
 import {
-  ILayoutRestorer,
-  JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
-import { IDocumentManager } from '@jupyterlab/docmanager';
-import { ITranslator } from '@jupyterlab/translation';
-import {
   INotebookTracker,
   NotebookPanel,
   INotebookModel
 } from '@jupyterlab/notebook';
+import {
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin
+} from '@jupyterlab/application';
 import { IWidgetManager, WidgetModel } from '@jupyter-widgets/base';
 import {
   IExecuteResult,
@@ -24,19 +21,7 @@ import {
 import { ICellModel } from '@jupyterlab/cells';
 import { ISharedCodeCell } from '@jupyter/ydoc';
 import { JSONObject, PromiseDelegate } from '@lumino/coreutils';
-
 import { Kernel } from '@jupyterlab/services';
-import {
-  JupyterLiteServer,
-  JupyterLiteServerPlugin
-} from '@jupyterlite/server';
-
-import { IContents } from '@jupyterlite/contents';
-import { AppletViewToolbarExtension } from './avtoolbarextension';
-import { activateAppletView } from './appletview';
-import { FailsContents } from './contents';
-import { ISettings } from '@jupyterlite/settings';
-import { FailsSettings } from './settings';
 
 export class AppletWidgetRegistry {
   registerModel(path: string, modelId: string) {
@@ -195,13 +180,13 @@ function activateWidgetInterceptor(
         // @ts-expect-error plotly
         console.log('renderer layout', renderer.node.layout);
         /* if (!(renderer as any).hasGraphElement()) {
-          (renderer as any).createGraph((renderer as any)['_model]']);
-        } */
+            (renderer as any).createGraph((renderer as any)['_model]']);
+          } */
 
         /* //@ts-expect-error on not found
-        renderer.node.on('plotly_relayout', (update: any) => {
-          console.log('relayout', update);
-        }); */
+          renderer.node.on('plotly_relayout', (update: any) => {
+            console.log('relayout', update);
+          }); */
 
         // special code for plotly
         return renderer;
@@ -279,8 +264,8 @@ function activateWidgetInterceptor(
               const widget = await widgetManager?.get_model(widget_model_id);
               // const children = widget.attributes.children as
               /* widget.attributes.children.forEach((child) => {
-                iterateWidgets(path + '/' + child. ,)
-              }) */
+                  iterateWidgets(path + '/' + child. ,)
+                }) */
               const mypath = path + (widget.name ? '/' + widget.name : '');
               const state = widget.get_state();
               const children = state.children as unknown as [WidgetModel];
@@ -302,30 +287,30 @@ function activateWidgetInterceptor(
             }
           };
           /* const labWidgetManager = widgetManager as LabWidgetManager;
-
-          if (labWidgetManager) {
-            labWidgetManager.restored.connect(lWManager => {
-              // we may be able to continue for some missing widgets
-              console.log('RESTORED');
-              const stillPendingModels: {
-                path: string;
-                widget_model_id: string;
-              }[] = [];
-              while (pendingModels.length > 0) {
-                const pModel = pendingModels.pop();
-                if (!pModel) {
-                  break;
+  
+            if (labWidgetManager) {
+              labWidgetManager.restored.connect(lWManager => {
+                // we may be able to continue for some missing widgets
+                console.log('RESTORED');
+                const stillPendingModels: {
+                  path: string;
+                  widget_model_id: string;
+                }[] = [];
+                while (pendingModels.length > 0) {
+                  const pModel = pendingModels.pop();
+                  if (!pModel) {
+                    break;
+                  }
+                  if (widgetManager?.has_model(pModel.widget_model_id)) {
+                    console.log('Resume model search', pModel.path);
+                    iterateWidgets(pModel.path, pModel.widget_model_id);
+                  } else {
+                    stillPendingModels.push(pModel);
+                  }
                 }
-                if (widgetManager?.has_model(pModel.widget_model_id)) {
-                  console.log('Resume model search', pModel.path);
-                  iterateWidgets(pModel.path, pModel.widget_model_id);
-                } else {
-                  stillPendingModels.push(pModel);
-                }
-              }
-              pendingModels.push(...stillPendingModels);
-            });
-          } */
+                pendingModels.push(...stillPendingModels);
+              });
+            } */
 
           const onCellsChanged = (cell: ICellModel) => {
             if (!trackedCells.has(cell)) {
@@ -407,49 +392,6 @@ function activateWidgetInterceptor(
   );
 }
 
-function activateFailsLauncher(app: JupyterFrontEnd): void {
-  if (app.namespace === 'JupyterLite Server') {
-    return;
-  }
-  // parts taken from repl-extension
-  const { /* commands, */ serviceManager, started } = app;
-  Promise.all([started, serviceManager.ready]).then(async () => {
-    /*  commands.execute('notebook:create-new', {
-      kernelId: undefined,
-      kernelName: undefined
-    }); */
-    // TODO select kernel and replace with content
-  });
-}
-
-const appletView: JupyterFrontEndPlugin<void> = {
-  id: '@fails-components/jupyter-applet-view:plugin',
-  description:
-    "An extension, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. ",
-  requires: [IDocumentManager, INotebookTracker, ITranslator],
-  optional: [ILayoutRestorer],
-  autoStart: false,
-  activate: activateAppletView
-};
-
-const appletViewToolbar: JupyterFrontEndPlugin<void> = {
-  id: '@fails-components/jupyter-applet-view:toolbar',
-  description: 'Add the applet view toolbar during editing.',
-  autoStart: false,
-  activate: async (app: JupyterFrontEnd) => {
-    if (app.namespace === 'JupyterLite Server') {
-      return;
-    }
-    const toolbarItems = undefined;
-    console.log('app commands', app.commands);
-    app.docRegistry.addWidgetExtension(
-      'Notebook',
-      new AppletViewToolbarExtension(app.commands, toolbarItems)
-    );
-  },
-  optional: []
-};
-
 const appletWidgetInterceptor: JupyterFrontEndPlugin<void> = {
   id: '@fails-components/jupyter-applet-widget:interceptor',
   description: 'Tracks and intercepts widget communication',
@@ -459,64 +401,6 @@ const appletWidgetInterceptor: JupyterFrontEndPlugin<void> = {
   optional: []
 };
 
-const failsLauncher: JupyterFrontEndPlugin<void> = {
-  id: '@fails-components/jupyter-fails-repl:launcher',
-  description: 'Configures the notebooks application over messages',
-  autoStart: false,
-  activate: activateFailsLauncher,
-  requires: [],
-  optional: []
-};
-
-/**
- * Initialization data for the @fails-components/jupyter-applet-view extension.
- */
-const plugins: (JupyterFrontEndPlugin<void> | JupyterLiteServerPlugin<any>)[] =
-  [];
-plugins.push(
-  // all JupyterFrontEndPlugins
-  appletView,
-  appletViewToolbar,
-  appletWidgetInterceptor,
-  failsLauncher
-);
-
-const failsContentsPlugin: JupyterLiteServerPlugin<IContents> = {
-  id: '@fails-components/jupyter-fails-server:contents',
-  requires: [],
-  autoStart: true,
-  provides: IContents,
-  activate: (app: JupyterLiteServer) => {
-    if (app.namespace !== 'JupyterLite Server') {
-      console.log('Not on server');
-    }
-    console.log('FAILS IContents');
-    const contents = new FailsContents();
-    app.started.then(() => contents.initialize().catch(console.warn));
-    return contents;
-  }
-};
-
-const failsSettingsPlugin: JupyterLiteServerPlugin<ISettings> = {
-  id: '@fails-components/jupyter-fails-server:settings',
-  requires: [],
-  autoStart: true,
-  provides: ISettings,
-  activate: (app: JupyterLiteServer) => {
-    if (app.namespace !== 'JupyterLite Server') {
-      console.log('Not on server');
-    }
-    console.log('FAILS ISettings');
-    const settings = new FailsSettings();
-    app.started.then(() => settings.initialize().catch(console.warn));
-    return settings;
-  }
-};
-
-plugins.push(
-  // all JupyterLiteServerPlugins
-  failsContentsPlugin,
-  failsSettingsPlugin
-);
+const plugins: JupyterFrontEndPlugin<void>[] = [appletWidgetInterceptor];
 
 export default plugins;

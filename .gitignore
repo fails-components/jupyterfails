@@ -7,9 +7,9 @@ node_modules/
 *.egg-info/
 .ipynb_checkpoints
 *.tsbuildinfo
-fails_components_jupyter_applet_view/labextension
+packages/*/fails_components_jupyter_*/labextension
 # Version file is handled by hatchling
-fails_components_jupyter_applet_view/_version.py
+packages/*/fails_components_jupyter_*/_version.py
 
 # Integration tests
 ui-tests/test-results/
@@ -127,5 +127,3 @@ dmypy.json
 #jupyterlite output
 jupyterLiteFailsOut
 .jupyterlite.doit.db
-
-fails_components_jupyter_applet_view
