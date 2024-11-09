@@ -49,7 +49,9 @@ export class AppletViewOutputArea extends AccordionPanel {
         )
       }));
     } else {
-      this._applets = [{ parts: [], appid: UUID.uuid4() }];
+      const appid = UUID.uuid4();
+      this._applets = [{ parts: [], appid }];
+      this.addApplet({ appid });
     }
     this.id = `AppletView-${UUID.uuid4()}`;
     this.title.label = 'Applets Preview';
@@ -573,7 +575,7 @@ export namespace AppletViewOutputArea {
      */
     notebook: NotebookPanel;
 
-    applets: IApplet[];
+    applets?: IApplet[];
 
     translator?: ITranslator;
   }

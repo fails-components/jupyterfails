@@ -29,7 +29,7 @@ export class SplitViewNotebookPanel extends NotebookPanel {
     splitPanel.addWidget(content);
     const widget = (this._appletviewWidget = new AppletViewOutputArea({
       notebook: this,
-      applets: [],
+      applets: undefined,
       translator: options.translator
     }));
     splitPanel.addWidget(widget);

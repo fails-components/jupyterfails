@@ -1,0 +1,10 @@
+{
+  "@jupyterlab/mainmenu-extension:plugin": {
+    "menus": [
+      {
+        "id": "jp-mainmenu-file",
+        "disabled": true
+      }
+    ]
+  }
+}

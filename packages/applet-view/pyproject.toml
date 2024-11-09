@@ -46,11 +46,12 @@ exclude = [".github", "binder"]
 path = "fails_components_jupyter_applet_view/labextension/_version.py"
 
 [tool.hatch.build.hooks.jupyter-builder]
-dependencies = ["hatch-jupyter-builder>=0.5"]
+dependencies = ["hatch-jupyter-builder>=0.9.1"]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
     "fails_components_jupyter_applet_view/labextension/static/style.js",
     "fails_components_jupyter_applet_view/labextension/package.json",
+    "fails_components_jupyter_applet_view/labextension/static/third-party-licenses.json",
 ]
 skip-if-exists = ["fails_components_jupyter_applet_view/labextension/static/style.js"]
 

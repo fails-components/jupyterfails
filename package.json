@@ -48,15 +48,6 @@
         "watch:src": "lerna exec --stream --parallel tsc -w --sourceMap",
         "watch:labextension": "lerna exec --stream jupyter labextension watch ."
     },
-    "dependencies": {
-        "@jupyter-widgets/jupyterlab-manager": "^5.0.11",
-        "@jupyterlab/application": "^4.0.0",
-        "@jupyterlite/application-extension": "^0.4.2",
-        "@jupyterlite/contents": "^0.4.2",
-        "@jupyterlite/server": "^0.4.2",
-        "@jupyterlite/settings": "^0.4.2",
-        "json5": "^2.2.3"
-    },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",
         "@jupyterlab/testutils": "^4.0.0",
