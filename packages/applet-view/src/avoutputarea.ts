@@ -50,7 +50,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       }));
     } else {
       const appid = UUID.uuid4();
-      this._applets = [{ parts: [], appid }];
+      this._applets = [];
       this.addApplet({ appid });
     }
     this.id = `AppletView-${UUID.uuid4()}`;
