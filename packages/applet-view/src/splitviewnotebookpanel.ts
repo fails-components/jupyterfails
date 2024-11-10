@@ -9,9 +9,13 @@ import {
 } from '@jupyterlab/notebook';
 import { BoxLayout, SplitPanel } from '@lumino/widgets';
 import { AppletViewOutputArea } from './avoutputarea';
+import { IFailsLauncherInfo } from './index';
 
 export class SplitViewNotebookPanel extends NotebookPanel {
-  constructor(options: DocumentWidget.IOptions<Notebook, INotebookModel>) {
+  constructor(
+    options: DocumentWidget.IOptions<Notebook, INotebookModel>,
+    failsLauncherInfo: IFailsLauncherInfo | undefined
+  ) {
     super(options);
     // now we have to do the following
     // 1. remove this._content from the layout
@@ -35,8 +39,7 @@ export class SplitViewNotebookPanel extends NotebookPanel {
     splitPanel.addWidget(widget);
     layout.addWidget(splitPanel);
     // move to separate handler
-    const isLecture = false;
-    if (isLecture) {
+    if (failsLauncherInfo?.inLecture) {
       this.toolbar.hide();
     }
   }
@@ -48,7 +51,18 @@ export class SplitViewNotebookPanel extends NotebookPanel {
     private _splitPanel: SplitPanel; */
   private _appletviewWidget: AppletViewOutputArea;
 }
+namespace SplitViewNotebookWidgetFactory {
+  export interface IOptions
+    extends NotebookWidgetFactory.IOptions<NotebookPanel> {
+    failsLauncherInfo?: IFailsLauncherInfo;
+  }
+}
+
 export class SplitViewNotebookWidgetFactory extends NotebookWidgetFactory {
+  constructor(options: SplitViewNotebookWidgetFactory.IOptions) {
+    super(options);
+    this._failsLauncherInfo = options.failsLauncherInfo;
+  }
   protected createNewWidget(
     context: DocumentRegistry.IContext<INotebookModel>,
     source?: NotebookPanel
@@ -76,6 +90,14 @@ export class SplitViewNotebookWidgetFactory extends NotebookWidgetFactory {
       kernelHistory
     };
     const content = this.contentFactory.createNotebook(nbOptions);
-    return new SplitViewNotebookPanel({ context, content });
+    return new SplitViewNotebookPanel(
+      {
+        context,
+        content
+      },
+      this._failsLauncherInfo
+    );
   }
+
+  private _failsLauncherInfo: IFailsLauncherInfo | undefined;
 }

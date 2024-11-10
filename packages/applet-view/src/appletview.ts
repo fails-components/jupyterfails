@@ -20,6 +20,7 @@ import {
 import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
 import { SplitViewNotebookWidgetFactory } from './splitviewnotebookpanel';
 import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
+import { IFailsLauncherInfo } from './index';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -33,7 +34,8 @@ export function activateAppletView(
   docManager: IDocumentManager,
   notebookTracker: INotebookTracker,
   translator: ITranslator,
-  restorer: ILayoutRestorer | null
+  restorer: ILayoutRestorer | null,
+  failsLauncherInfo: IFailsLauncherInfo | null
 ): void {
   console.log('ACTIVATE applet view');
   if (app.namespace === 'JupyterLite Server') {
@@ -91,7 +93,9 @@ export function activateAppletView(
       notebookConfig: realFactory.notebookConfig,
       mimeTypeService: realFactory.mimeTypeService,
       toolbarFactory: realFactory['_toolbarFactory'],
-      translator
+      translator,
+      failsLauncherInfo:
+        failsLauncherInfo !== null ? failsLauncherInfo : undefined
     });
     let id = 0;
     // we need to clone the registration with the tracker from the plugin:

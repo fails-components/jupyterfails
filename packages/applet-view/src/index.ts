@@ -11,13 +11,22 @@ import { activateAppletView } from './appletview';
 import { INotebookShell } from '@jupyter-notebook/application';
 import { Kernel } from '@jupyterlab/services';
 import { Panel } from '@lumino/widgets';
+import { Token } from '@lumino/coreutils';
 // import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
+
+export const IFailsLauncherInfo = new Token<IFailsLauncherInfo>(
+  '@fails-components/jupyter-fails:IFailsLauncherInfo',
+  'A service to commincate with FAILS.'
+);
+export interface IFailsLauncherInfo {
+  inLecture: boolean;
+}
 
 function activateFailsLauncher(
   app: JupyterFrontEnd,
   docManager: IDocumentManager,
   shell: INotebookShell | null
-): void {
+): IFailsLauncherInfo {
   // parts taken from repl-extension
   const { /* commands, */ serviceManager, started } = app;
   Promise.all([started, serviceManager.ready]).then(async () => {
@@ -30,13 +39,15 @@ function activateFailsLauncher(
   // TODO steer with messages
   const { docRegistry } = app;
   const file = 'proxy.ipynb';
+  const failsLauncherInfo: IFailsLauncherInfo = {
+    inLecture: false
+  };
 
   app.started.then(async () => {
-    const inLecture = false;
     if (shell) {
       // we have a notebook
       shell.collapseTop();
-      if (inLecture) {
+      if (failsLauncherInfo.inLecture) {
         const menuWrapper = shell['_menuWrapper'] as Panel;
         menuWrapper.hide();
         // const main = shell['_main'] as SplitViewNotebookPanel;
@@ -53,6 +64,7 @@ function activateFailsLauncher(
       ref: '_noref'
     });
   });
+  return failsLauncherInfo;
 }
 
 const appletView: JupyterFrontEndPlugin<void> = {
@@ -60,7 +72,7 @@ const appletView: JupyterFrontEndPlugin<void> = {
   description:
     "An extension, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. ",
   requires: [IDocumentManager, INotebookTracker, ITranslator],
-  optional: [ILayoutRestorer],
+  optional: [ILayoutRestorer, IFailsLauncherInfo],
   autoStart: true,
   activate: activateAppletView
 };
@@ -81,11 +93,12 @@ const appletViewToolbar: JupyterFrontEndPlugin<void> = {
 };
 
 // TODO move  to separate plugin
-const failsLauncher: JupyterFrontEndPlugin<void> = {
+const failsLauncher: JupyterFrontEndPlugin<IFailsLauncherInfo> = {
   id: '@fails-components/jupyter-fails:launcher',
   description: 'Configures the notebooks application over messages',
   autoStart: true,
   activate: activateFailsLauncher,
+  provides: IFailsLauncherInfo,
   requires: [IDocumentManager],
   optional: [INotebookShell]
 };
@@ -93,7 +106,7 @@ const failsLauncher: JupyterFrontEndPlugin<void> = {
 /**
  * Initialization data for the @fails-components/jupyter-applet-view extension.
  */
-const plugins: JupyterFrontEndPlugin<void>[] = [
+const plugins: JupyterFrontEndPlugin<any>[] = [
   // all JupyterFrontEndPlugins
   appletView,
   appletViewToolbar,
