@@ -9,6 +9,9 @@ import { INotebookTracker } from '@jupyterlab/notebook';
 import { AppletViewToolbarExtension } from './avtoolbarextension';
 import { activateAppletView } from './appletview';
 import { INotebookShell } from '@jupyter-notebook/application';
+import { Kernel } from '@jupyterlab/services';
+import { Panel } from '@lumino/widgets';
+// import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
 
 function activateFailsLauncher(
   app: JupyterFrontEnd,
@@ -29,14 +32,24 @@ function activateFailsLauncher(
   const file = 'proxy.ipynb';
 
   app.started.then(async () => {
+    const inLecture = false;
     if (shell) {
       // we have a notebook
       shell.collapseTop();
+      if (inLecture) {
+        const menuWrapper = shell['_menuWrapper'] as Panel;
+        menuWrapper.hide();
+        // const main = shell['_main'] as SplitViewNotebookPanel;
+        // main.toolbar.hide();
+      }
     }
+    const kernel: Partial<Kernel.IModel> = {
+      name: 'python' // 'xpython' for xeus
+    };
 
     const defaultFactory = docRegistry.defaultWidgetFactory(file).name;
     const factory = defaultFactory;
-    docManager.open(file, factory, undefined, {
+    docManager.open(file, factory, kernel, {
       ref: '_noref'
     });
   });

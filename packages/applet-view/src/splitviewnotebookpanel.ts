@@ -34,6 +34,11 @@ export class SplitViewNotebookPanel extends NotebookPanel {
     }));
     splitPanel.addWidget(widget);
     layout.addWidget(splitPanel);
+    // move to separate handler
+    const isLecture = false;
+    if (isLecture) {
+      this.toolbar.hide();
+    }
   }
 
   get appletViewWidget() {
