@@ -6,3 +6,5 @@ dependencies:
   - python=3.11
   - xeus-python
   - ipycanvas
+  - ipywidgets
+  - matplotlib

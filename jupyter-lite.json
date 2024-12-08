@@ -5,7 +5,7 @@
     "appUrl": "./notebooks",
     "baseUrl": "./",
     "defaultKernelName": "python",
-    "faviconUrl": "./lab/favicon.ico",
+    "faviconUrl": "./notebooks/favicon.ico",
     "federated_extensions": [],
     "disabledExtensions": [
       "@jupyterlite/server-extension:localforage",
