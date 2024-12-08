@@ -56,3 +56,22 @@
     content: '\25BC';
 }
 
+.fl-jl-notebook-inlecture .lm-AccordionPanel-title {
+    display: none;
+}
+
+.fl-jl-notebook-inlecture .lm-SplitPanel-handle {
+    display: none;
+}
+
+.fl-jl-notebook-inlecture .fl-jp-AppletView {
+    overflow: hidden;
+}
+
+.fl-jl-notebook-inlecture .jp-NotebookPanel-notebook {
+    display: none;
+}
+
+body[data-notebook='notebooks'] .jp-WindowedPanel-inner {
+    margin-top: 0;
+}

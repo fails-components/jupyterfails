@@ -15,7 +15,8 @@ import {
   Widget,
   Panel,
   BoxLayout,
-  PanelLayout
+  PanelLayout,
+  AccordionLayout
 } from '@lumino/widgets';
 import { MainAreaWidget } from '@jupyterlab/apputils';
 
@@ -36,22 +37,26 @@ export class AppletViewOutputArea extends AccordionPanel {
     super();
     const trans = (options.translator || nullTranslator).load('jupyterlab');
     this._notebook = options.notebook;
+    this._inLecture = false;
     if (options.applets !== undefined) {
-      this._applets = options.applets.map(({ parts, appid }) => ({
-        appid: appid ?? UUID.uuid4(),
-        parts: parts.map(
-          el =>
-            new AppletViewOutputAreaPart({
-              index: el.index !== undefined ? el.index : -1,
-              cell: el.cell || undefined,
-              notebook: this._notebook
-            })
-        )
-      }));
+      this._applets = options.applets.map(
+        ({ parts, appid, appname }, index) => ({
+          appid: appid ?? UUID.uuid4(),
+          appname: appname || 'Applet ' + (index + 1),
+          parts: parts.map(
+            el =>
+              new AppletViewOutputAreaPart({
+                index: el.index !== undefined ? el.index : -1,
+                cell: el.cell || undefined,
+                notebook: this._notebook
+              })
+          )
+        })
+      );
     } else {
       const appid = UUID.uuid4();
       this._applets = [];
-      this.addApplet({ appid });
+      this.addApplet({ appid, appname: 'Applet 1' });
     }
     this.id = `AppletView-${UUID.uuid4()}`;
     this.title.label = 'Applets Preview';
@@ -362,6 +367,20 @@ export class AppletViewOutputArea extends AccordionPanel {
     ) {
       return;
     }
+    // clear applets
+    this._applets = [];
+    if (this.layout) {
+      (this.layout as PanelLayout).widgets.forEach((widget: Widget) =>
+        this.layout?.removeWidget(widget)
+      );
+    }
+
+    if (applets.length === 0) {
+      // we need a minimum of 1 applet!
+      const appid = UUID.uuid4();
+      this.addApplet({ appid, appname: 'Applet 1' });
+      return;
+    }
     for (const applet of applets) {
       const appid = applet.appid ?? UUID.uuid4();
       this.addApplet({ appid });
@@ -377,7 +396,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
   }
 
-  addApplet({ appid }: { appid: string }): Panel {
+  addApplet({ appid, appname }: { appid: string; appname?: string }): Panel {
     // figure out, if it is already added
     let appletIndex = this._applets.findIndex(applet => applet.appid === appid);
     if (appletIndex !== -1) {
@@ -385,12 +404,16 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
     // TODO add element to widgets
     appletIndex = this._applets.length;
-    this._applets.push({ appid, parts: [] });
+    this._applets.push({
+      appid,
+      appname: appname || 'Applet ' + Math.random().toString(36).slice(2, 6),
+      parts: []
+    });
     const layout = this.layout as PanelLayout;
     const panel = new Panel({});
     BoxLayout.setStretch(panel, 1);
     panel.addClass('fl-jp-Applet');
-    panel.title.label = 'Applet ' + this._applets.length;
+    panel.title.label = appname || 'Applet ' + this._applets.length;
     panel.title.caption = panel.title.label;
     layout.insertWidget(appletIndex, panel);
 
@@ -508,6 +531,17 @@ export class AppletViewOutputArea extends AccordionPanel {
     return this._applets[0].parts.some(el => el.index === index);
   }
 
+  selectApplet(selectedAppid: string) {
+    for (let i = 0; i < this._applets.length; i++) {
+      const applet = this._applets[i];
+      if (applet.appid === selectedAppid) {
+        this.expand(i);
+      } else {
+        this.collapse(i);
+      }
+    }
+  }
+
   /* hasId(id: string): boolean {
       return this._parts.some(el => el.id === id);
     } */
@@ -539,9 +573,23 @@ export class AppletViewOutputArea extends AccordionPanel {
     return this._viewChanged;
   }
 
+  set inLecture(value: boolean) {
+    if (value === this._inLecture) {
+      return;
+    }
+    this._inLecture = value;
+    const splitLayout = this.layout as AccordionLayout;
+    if (value) {
+      splitLayout.titleSpace = 0;
+    } else {
+      splitLayout.titleSpace = 22;
+    }
+  }
+
   private _notebook: NotebookPanel;
   private _applets: IViewApplet[];
   private _viewChanged = new Signal<this, void>(this);
+  private _inLecture: boolean;
 }
 /**
  * AppletViewOutputArea statics.
@@ -566,6 +614,7 @@ export namespace AppletViewOutputArea {
   }
   export interface IApplet {
     appid?: string; // should be always, present, but if not it is randomly generated
+    appname?: string; // A user readable string identifiying the app
     parts: IAppletPart[];
   }
 
@@ -591,6 +640,7 @@ export interface IViewPart extends IViewPartBase {
 }
 export interface IViewApplet {
   appid: string;
+  appname: string;
   parts: IViewPart[];
 }
 export interface IAppletPartOptions extends IViewPartBase {

@@ -1,6 +1,12 @@
 import { Contents as ServerContents } from '@jupyterlab/services';
 import { IContents } from '@jupyterlite/contents';
 import { PromiseDelegate } from '@lumino/coreutils';
+import {
+  IFailsCallbacks,
+  IContentEventType,
+  ILoadJupyterContentEvent,
+  ISavedJupyterContentEvent
+} from '@fails-components/jupyter-applet-view';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -10,11 +16,41 @@ import { PromiseDelegate } from '@lumino/coreutils';
 // This code contains portions from or is inspired by Jupyter lab and lite
 
 const jsonMime = 'application/json';
-const proxyName = 'proxy.ipynb';
 
 export class FailsContents implements IContents {
   constructor() {
     this._ready = new PromiseDelegate();
+    if (!(window as any).failsCallbacks) {
+      (window as any).failsCallbacks = {};
+    }
+    this._failsCallbacks = (window as any).failsCallbacks;
+    this._failsCallbacks.callContents = this.onMessage.bind(this);
+  }
+
+  async onMessage(event: IContentEventType): Promise<any> {
+    // todo handle events
+    switch (event.task) {
+      case 'loadFile':
+        {
+          const loadevent = event as ILoadJupyterContentEvent;
+          this._fileContent = JSON.stringify(
+            loadevent.fileData || FailsContents.EMPTY_NB
+          );
+          this._fileName = loadevent.fileName;
+        }
+        break;
+      case 'savedFile':
+        {
+          const savedevent = event as ISavedJupyterContentEvent;
+          if (this._fileName !== savedevent.fileName) {
+            return { error: 'Filename not found' };
+          }
+          return {
+            fileData: JSON.parse(this._fileContent)
+          };
+        }
+        break;
+    }
   }
 
   get ready(): Promise<void> {
@@ -33,8 +69,8 @@ export class FailsContents implements IContents {
     path = decodeURIComponent(path.replace(/^\//, ''));
 
     const serverFile = {
-      name: proxyName,
-      path: proxyName,
+      name: this._fileName,
+      path: this._fileName,
       last_modified: new Date(0).toISOString(),
       created: new Date(0).toISOString(),
       format: 'json' as ServerContents.FileFormat,
@@ -60,7 +96,7 @@ export class FailsContents implements IContents {
         type: 'directory'
       };
     }
-    if (path === proxyName) {
+    if (path === this._fileName) {
       return serverFile;
     }
     return null; // not found
@@ -71,7 +107,7 @@ export class FailsContents implements IContents {
     options: Partial<ServerContents.IModel> = {}
   ): Promise<ServerContents.IModel | null> {
     path = decodeURIComponent(path);
-    if (path !== proxyName) {
+    if (path !== this._fileName) {
       // we only allow the proxy object
       return null;
     }
@@ -177,4 +213,6 @@ export class FailsContents implements IContents {
 
   private _ready: PromiseDelegate<void>;
   private _fileContent: string = JSON.stringify(FailsContents.EMPTY_NB);
+  private _fileName: string = 'unloaded.ipynb';
+  private _failsCallbacks: IFailsCallbacks;
 }

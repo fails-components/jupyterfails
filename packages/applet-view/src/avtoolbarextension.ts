@@ -12,6 +12,7 @@ import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
 import { AppletViewOutputArea, IViewPart } from './avoutputarea';
 import { Toolbar } from '@jupyterlab/ui-components';
 import { Signal } from '@lumino/signaling';
+import { IFailsLauncherInfo } from './index';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -53,11 +54,13 @@ export class AppletViewToolbarExtension
 
   constructor(
     commands: CommandRegistry,
+    launcherInfo: IFailsLauncherInfo | null,
     toolbarFactory?: (
       widget: Widget
     ) => IObservableList<ToolbarRegistry.IToolbarItem>
   ) {
     this._commands = commands;
+    this._launcherInfo = launcherInfo;
     console.log('peek toolbar factory', toolbarFactory);
     // # TODO we have to make sure, we get the default, how can we do this?
     this._toolbarFactory = toolbarFactory ?? this.defaultToolbarFactory;
@@ -98,13 +101,18 @@ export class AppletViewToolbarExtension
 
   createNew(panel: SplitViewNotebookPanel): IDisposable {
     console.log('createNew', panel);
-    return new AppletViewToolbarTracker(panel, this._toolbarFactory);
+    return new AppletViewToolbarTracker(
+      panel,
+      this._toolbarFactory,
+      this._launcherInfo
+    );
   }
 
   private _commands: CommandRegistry;
   private _toolbarFactory: (
     widget: Widget
   ) => IObservableList<ToolbarRegistry.IToolbarItem>;
+  private _launcherInfo: IFailsLauncherInfo | null;
 }
 export class AppletViewToolbarTracker implements IDisposable {
   /**
@@ -117,7 +125,8 @@ export class AppletViewToolbarTracker implements IDisposable {
     notebookpanel: SplitViewNotebookPanel,
     toolbarFactory: (
       widget: Widget
-    ) => IObservableList<ToolbarRegistry.IToolbarItem>
+    ) => IObservableList<ToolbarRegistry.IToolbarItem>,
+    launcherInfo: IFailsLauncherInfo | null
   ) {
     console.log('Tracker area', notebookpanel);
     this._notebookpanel = notebookpanel;
@@ -132,6 +141,20 @@ export class AppletViewToolbarTracker implements IDisposable {
         );
         console.log('first add toolbar');
         this._addToolbar();
+        if (launcherInfo?.inLecture) {
+          this._setHiddenToolbars(launcherInfo?.inLecture);
+        }
+        if (launcherInfo) {
+          let hasToolbar = !launcherInfo?.inLecture;
+          launcherInfo.inLectureChanged.connect(
+            (sender: IFailsLauncherInfo, newInLecture: boolean) => {
+              if (hasToolbar !== !newInLecture) {
+                this._setHiddenToolbars(newInLecture);
+                hasToolbar = !newInLecture;
+              }
+            }
+          );
+        }
         console.log('first add toolbar end');
       });
     });
@@ -240,6 +263,22 @@ export class AppletViewToolbarTracker implements IDisposable {
         .catch(e => {
           console.error('Error rendering buttons of the cell toolbar: ', e);
         });
+    }
+  }
+
+  _setHiddenToolbars(hidden: boolean): void {
+    const notebookpanel = this._notebookpanel;
+    if (notebookpanel && !notebookpanel.isDisposed) {
+      const applets = notebookpanel.appletViewWidget?.applets;
+      for (const applet of applets) {
+        for (const part of applet.parts) {
+          const toolbarWidget = this._toolbars.get(part);
+          if (!toolbarWidget) {
+            continue;
+          }
+          toolbarWidget.setHidden(hidden);
+        }
+      }
     }
   }
 
