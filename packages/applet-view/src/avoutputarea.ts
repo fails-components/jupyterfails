@@ -19,6 +19,7 @@ import {
   AccordionLayout
 } from '@lumino/widgets';
 import { MainAreaWidget } from '@jupyterlab/apputils';
+import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -40,18 +41,25 @@ export class AppletViewOutputArea extends AccordionPanel {
     this._inLecture = false;
     if (options.applets !== undefined) {
       this._applets = options.applets.map(
-        ({ parts, appid, appname }, index) => ({
-          appid: appid ?? UUID.uuid4(),
-          appname: appname || 'Applet ' + (index + 1),
-          parts: parts.map(
-            el =>
-              new AppletViewOutputAreaPart({
-                index: el.index !== undefined ? el.index : -1,
-                cell: el.cell || undefined,
-                notebook: this._notebook
-              })
-          )
-        })
+        ({ parts, appid: oldAppid, appname }, index) => {
+          const appid = oldAppid ?? UUID.uuid4();
+          return {
+            appid,
+            appname: appname || 'Applet ' + (index + 1),
+            observer: new ResizeObserver(
+              (entries: ResizeObserverEntry[], observer: ResizeObserver) =>
+                this.resizeEvent(appid, entries, observer)
+            ),
+            parts: parts.map(
+              el =>
+                new AppletViewOutputAreaPart({
+                  index: el.index !== undefined ? el.index : -1,
+                  cell: el.cell || undefined,
+                  notebook: this._notebook
+                })
+            )
+          };
+        }
       );
     } else {
       const appid = UUID.uuid4();
@@ -169,6 +177,16 @@ export class AppletViewOutputArea extends AccordionPanel {
     return this._applets[index].appid;
   }
 
+  addToObserver(appIndex: number, widget: Widget) {
+    const observer = this._applets[appIndex].observer;
+    observer.observe(widget.node, { box: 'border-box' });
+  }
+
+  removeFromObserver(appIndex: number, widget: Widget) {
+    const observer = this._applets[appIndex].observer;
+    observer.unobserve(widget.node);
+  }
+
   addCell(appid: string, cell: Cell, cellid: string): Widget {
     const appIndex = this._applets.findIndex(applet => applet.appid === appid);
     if (appIndex === -1) {
@@ -176,7 +194,12 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
     const app = this.widgets[appIndex] as Panel;
     const clone = this.cloneCell(cell, cellid);
+    this.addToObserver(appIndex, clone);
     app.addWidget(clone);
+
+    // this.informResize(this._applets[appIndex]) // not neccessary
+    // trigger an update ?
+    this._viewChanged.emit();
     return clone;
   }
 
@@ -192,8 +215,13 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
     const clone = this.cloneCell(cell, cellid);
     const app = this.widgets[appIndex] as Panel;
+    this.addToObserver(appIndex, clone);
     const layout = app.layout as BoxLayout;
     layout.insertWidget(index, clone);
+
+    // this.informResize(this._applets[appIndex]) // not neccessary
+    // trigger an update ?
+    this._viewChanged.emit();
     return clone;
   }
 
@@ -207,15 +235,21 @@ export class AppletViewOutputArea extends AccordionPanel {
     if (todeleteIndex === -1) {
       return;
     }
-    console.log('delete debug 0', applet.parts.map(el => el.id).join(','));
-    applet.parts.splice(todeleteIndex, 1);
+    const removedPart = applet.parts.splice(todeleteIndex, 1);
+    if (removedPart.length > 0) {
+      const cell = removedPart[0].cell;
+      if (typeof cell !== 'undefined') {
+        this.removeFromObserver(appIndex, cell)
+
+      }
+    }
 
     const app = this.widgets[appIndex];
     const layout = app.layout as BoxLayout;
-    console.log('delete debug 1', applet.parts.map(el => el.id).join(','));
 
     layout.removeWidgetAt(todeleteIndex);
 
+    this.informResize(this._applets[appIndex])
     // trigger an update ?
     this._viewChanged.emit();
   }
@@ -236,14 +270,12 @@ export class AppletViewOutputArea extends AccordionPanel {
     if (tomoveIndex + delta >= applet.parts.length) {
       return;
     }
-    console.log('move me debug 0', applet.parts.map(el => el.id).join(','));
     const [moveme] = applet.parts.splice(tomoveIndex, 1);
-    console.log('move me debug 1', applet.parts.map(el => el.id).join(','));
     applet.parts.splice(tomoveIndex + delta + (delta > 1 ? -1 : 0), 0, moveme);
-    console.log('move me debug 2', applet.parts.map(el => el.id).join(','));
     const app = this.widgets[appIndex] as Panel;
     const layout = app.layout as BoxLayout;
     layout.insertWidget(tomoveIndex + delta, layout.widgets[tomoveIndex]);
+    this.informResize(this._applets[appIndex])
     // trigger an update ?
     this._viewChanged.emit();
   }
@@ -323,6 +355,8 @@ export class AppletViewOutputArea extends AccordionPanel {
     const srcLayout = srcApp.layout as BoxLayout;
     const destLayout = destApp.layout as BoxLayout;
     const widget = srcLayout.widgets[partIndex];
+    this.removeFromObserver(appIndex, widget);
+    this.addToObserver(appIndex + delta, widget);
     destLayout.insertWidget(destPartIndex, widget);
     // srcLayout.removeWidgetAt(partIndex); // not necessary
     if (appIndex === this._applets.length - 1 && applet.parts.length === 0) {
@@ -331,6 +365,8 @@ export class AppletViewOutputArea extends AccordionPanel {
       const appSrcLayout = this.layout as BoxLayout;
       appSrcLayout.removeWidgetAt(appIndex);
     }
+    this.informResize(this._applets[appIndex])
+    this.informResize(this._applets[appIndex +  delta])
     // trigger an update ?
     this._viewChanged.emit();
   }
@@ -407,6 +443,10 @@ export class AppletViewOutputArea extends AccordionPanel {
     this._applets.push({
       appid,
       appname: appname || 'Applet ' + Math.random().toString(36).slice(2, 6),
+      observer: new ResizeObserver(
+        (entries: ResizeObserverEntry[], observer: ResizeObserver) =>
+          this.resizeEvent(appid, entries, observer)
+      ),
       parts: []
     });
     const layout = this.layout as PanelLayout;
@@ -542,6 +582,55 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
   }
 
+  unselectApplet() {
+    for (let i = 0; i < this._applets.length; i++) {
+      this.expand(i);
+    }
+  }
+
+  informResize(applet: IViewApplet) {
+    // inform about the new sizes
+    let width = 0;
+    let height = 0;
+    console.log('peek inform resize')
+    for (const part of applet.parts) {
+      console.log('peek inform resize part', part)
+      if (typeof part.sizes === 'undefined') continue
+      const { width : ewidth, height : eheight } = part.sizes
+      height += eheight;
+      width = Math.max(ewidth, width);
+    }
+    this._notebook.appletResizeinfo({
+      appid: applet.appid,
+      width,
+      height
+    });
+  }
+
+  resizeEvent(
+    appid: string,
+    entries: ResizeObserverEntry[],
+    observer: ResizeObserver
+  ): void {
+    const applet = this._applets.find(applet => applet.appid === appid);
+    if (typeof applet === 'undefined') return;
+    let updated = false;
+    for (const entry of entries) {
+      const part = applet.parts.find(part => part?.clone?.node === entry.target)
+      if (!part) continue
+      if (!entry.borderBoxSize[0]) continue
+      const size = entry.borderBoxSize[0];
+      if (size.inlineSize === 0 || size.blockSize === 0) continue // do not store collapsed values
+      part.sizes = {
+        width : size.inlineSize,
+        height: size.blockSize
+      }
+      updated = true
+    }
+    if (!updated) return
+    this.informResize(applet)
+  }
+
   /* hasId(id: string): boolean {
       return this._parts.some(el => el.id === id);
     } */
@@ -586,7 +675,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
   }
 
-  private _notebook: NotebookPanel;
+  private _notebook: SplitViewNotebookPanel;
   private _applets: IViewApplet[];
   private _viewChanged = new Signal<this, void>(this);
   private _inLecture: boolean;
@@ -622,7 +711,7 @@ export namespace AppletViewOutputArea {
     /**
      * The notebook associated with the cloned output area.
      */
-    notebook: NotebookPanel;
+    notebook: SplitViewNotebookPanel;
 
     applets?: IApplet[];
 
@@ -633,15 +722,22 @@ export interface IViewPartBase extends AppletViewOutputArea.IAppletPart {
   added?: boolean;
   clone?: Widget;
 }
+export interface IViewPartSize {
+  width: number;
+  height: number;
+}
+
 export interface IViewPart extends IViewPartBase {
   added?: boolean;
   clone?: Widget;
   cloned: ISignal<IViewPart, void>;
+  sizes?: IViewPartSize;
 }
 export interface IViewApplet {
   appid: string;
   appname: string;
   parts: IViewPart[];
+  observer: ResizeObserver;
 }
 export interface IAppletPartOptions extends IViewPartBase {
   notebook: NotebookPanel;

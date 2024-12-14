@@ -30,9 +30,17 @@ export interface IFailsLauncherInit {
   reportMetadata?: (metadata: PartialJSONObject) => void;
 }
 
+export interface IFailsAppletSize {
+  appid: string;
+  width: number;
+  height: number;
+}
+
 export interface IFailsLauncherInfo extends IFailsLauncherInit {
   inLectureChanged: ISignal<IFailsLauncherInfo, boolean>;
   selectedAppidChanged: ISignal<this, string | undefined>;
+  appletSizes: { [key: string]: IFailsAppletSize };
+  appletSizesChanged: ISignal<this, { [key: string]: IFailsAppletSize }>;
 }
 
 export interface ILoadJupyterInfo {
@@ -107,10 +115,40 @@ class FailsLauncherInfo implements IFailsLauncherInfo {
     this._selectedAppidChanged.emit(appid);
   }
 
+  get appletSizes() {
+    return this._appletSizesProxy;
+  }
+
+  get appletSizesChanged() {
+    return this._appletSizesChanged;
+  }
+
   private _inLecture: boolean;
   private _inLectureChanged = new Signal<this, boolean>(this);
   private _selectedAppid: string | undefined;
   private _selectedAppidChanged = new Signal<this, string | undefined>(this);
+  private _appletSizes: { [key: string]: IFailsAppletSize } = {};
+  private _appletSizesChanged = new Signal<
+    this,
+    { [key: string]: IFailsAppletSize }
+  >(this);
+  private _appletSizesProxy = new Proxy(this._appletSizes, {
+    get: (target, property) => {
+      if (typeof property !== 'symbol') {
+        return target[property];
+      }
+    },
+    set: (target, property, value) => {
+      if (typeof property !== 'symbol') {
+        if (target[property] !== value) {
+          target[property] = value;
+          this._appletSizesChanged.emit(target);
+        }
+        return true;
+      }
+      return false;
+    }
+  });
 }
 
 function activateFailsLauncher(
@@ -164,6 +202,17 @@ function activateFailsLauncher(
       if (shell !== null) {
         shell.menu.setHidden(inLecture);
       }
+    }
+  );
+  failsLauncherInfo.appletSizesChanged.connect(
+    (
+      sender: IFailsLauncherInfo,
+      appletSizes: { [key: string]: IFailsAppletSize }
+    ) => {
+      _failsCallbacks.postMessageToFails!({
+        task: 'reportFailsAppletSizes',
+        appletSizes
+      });
     }
   );
   window.addEventListener('message', (event: MessageEvent<any>) => {

@@ -11,12 +11,19 @@ import { BoxLayout, SplitPanel } from '@lumino/widgets';
 import { AppletViewOutputArea } from './avoutputarea';
 import { IFailsLauncherInfo } from './index';
 
+interface IAppletResizeEvent {
+  appid: string;
+  width: number;
+  height: number;
+}
+
 export class SplitViewNotebookPanel extends NotebookPanel {
   constructor(
     options: DocumentWidget.IOptions<Notebook, INotebookModel>,
     failsLauncherInfo: IFailsLauncherInfo | undefined
   ) {
     super(options);
+    this._failsLauncherInfo = failsLauncherInfo;
     // now we have to do the following
     // 1. remove this._content from the layout
     const content = this['_content'];
@@ -52,12 +59,15 @@ export class SplitViewNotebookPanel extends NotebookPanel {
             this.toolbar.hide();
             this.addClass('fl-jl-notebook-inlecture');
             this._appletviewWidget.inLecture = true;
+            content.hide()
             splitPanel.setRelativeSizes([0, 1]); // change sizes
           } else {
             this.toolbar.show();
             this.removeClass('fl-jl-notebook-inlecture');
             this._appletviewWidget.inLecture = false;
+            content.show()
             splitPanel.setRelativeSizes([1, 1]); // change sizes
+            widget.unselectApplet();
           }
         }
       );
@@ -79,12 +89,19 @@ export class SplitViewNotebookPanel extends NotebookPanel {
     metadataUpdater();
   }
 
+  appletResizeinfo({ appid, width, height }: IAppletResizeEvent) {
+    if (this._failsLauncherInfo) {
+      this._failsLauncherInfo.appletSizes[appid] = { appid, width, height };
+    }
+  }
+
   get appletViewWidget() {
     return this._appletviewWidget;
   }
   /*
     private _splitPanel: SplitPanel; */
   private _appletviewWidget: AppletViewOutputArea;
+  private _failsLauncherInfo: IFailsLauncherInfo | undefined;
 }
 namespace SplitViewNotebookWidgetFactory {
   export interface IOptions

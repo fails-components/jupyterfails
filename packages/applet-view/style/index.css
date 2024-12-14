@@ -24,6 +24,32 @@
     display: none;
 }
 
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-OutputArea-child,
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-Cell,
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-CellHeader,
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-CellFooter,
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-Cell-inputWrapper,
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-InputArea,
+.fl-jl-notebook-inlecture .fl-jp-Applet .jp-OutputArea {
+    width: fit-content;
+}
+
+.fl-jl-notebook-inlecture .fl-jp-Applet h1,
+.fl-jl-notebook-inlecture .fl-jp-Applet h2,
+.fl-jl-notebook-inlecture .fl-jp-Applet h3,
+.fl-jl-notebook-inlecture .fl-jp-Applet h4,
+.fl-jl-notebook-inlecture .fl-jp-Applet h5,
+.fl-jl-notebook-inlecture .fl-jp-Applet h6 {
+    white-space: nowrap;
+    /* overflow: hidden; 
+     text-overflow: ellipsis; */
+  }
+
+.fl-jl-notebook-inlecture .jp-OutputArea-output {
+    width: max-content;
+    height: max-content;
+}
+
 .fl-jp-AppletViewToolbar {
     position: absolute;
     right: 0;
