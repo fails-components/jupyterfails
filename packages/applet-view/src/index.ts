@@ -9,7 +9,11 @@ import { IDocumentManager } from '@jupyterlab/docmanager';
 import { IDocumentWidget } from '@jupyterlab/docregistry';
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 import { ITranslator } from '@jupyterlab/translation';
-import { INotebookTracker, NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
+import {
+  INotebookTracker,
+  NotebookActions,
+  NotebookPanel
+} from '@jupyterlab/notebook';
 import { AppletViewToolbarExtension } from './avtoolbarextension';
 import { activateAppletView } from './appletview';
 import { INotebookShell } from '@jupyter-notebook/application';
@@ -174,7 +178,9 @@ function activateFailsLauncher(
   let currentDocWidget: IDocumentWidget | undefined;
 
   const serverSettings = app.serviceManager.serverSettings;
-  const licensesUrl = URLExt.join(PageConfig.getBaseUrl(), PageConfig.getOption('licensesUrl')) + '/';
+  const licensesUrl =
+    URLExt.join(PageConfig.getBaseUrl(), PageConfig.getOption('licensesUrl')) +
+    '/';
 
   // Install Messagehandler
   if (!(window as any).failsCallbacks) {
@@ -321,9 +327,9 @@ function activateFailsLauncher(
         }
         break;
       case 'restartKernelAndRerunCells':
-      {
-        if (typeof currentDocWidget === 'undefined') {
-           _failsCallbacks.postMessageToFails!({
+        {
+          if (typeof currentDocWidget === 'undefined') {
+            _failsCallbacks.postMessageToFails!({
               requestId: event.data.requestId,
               task: 'restartKernelAndRerunCell',
               error: 'No document loaded'
@@ -331,50 +337,53 @@ function activateFailsLauncher(
             break;
           }
           const notebookPanel = currentDocWidget as NotebookPanel;
-          const {context, content} = notebookPanel;
+          const { context, content } = notebookPanel;
           const cells = content.widgets;
-          console.log('rerun kernel hook')
-      
-          notebookPanel.sessionContext.restartKernel().then(async () => {
-          await NotebookActions.runCells(content,
-            cells,
-            context.sessionContext);
-            _failsCallbacks.postMessageToFails!({
-              requestId: event.data.requestId,
-              task: 'restartKernelAndRerunCell',
-              success: true
+          console.log('rerun kernel hook');
+
+          notebookPanel.sessionContext
+            .restartKernel()
+            .then(async () => {
+              await NotebookActions.runCells(
+                content,
+                cells,
+                context.sessionContext
+              );
+              _failsCallbacks.postMessageToFails!({
+                requestId: event.data.requestId,
+                task: 'restartKernelAndRerunCell',
+                success: true
+              });
+            })
+            .catch((error: Error) => {
+              _failsCallbacks.postMessageToFails!({
+                requestId: event.data.requestId,
+                task: 'restartKernelAndRerunCell',
+                error: error.toString()
+              });
             });
-
-        }).catch((error: Error) => {
-          _failsCallbacks.postMessageToFails!({
-            requestId: event.data.requestId,
-            task: 'restartKernelAndRerunCell',
-            error: error.toString()
-          });
-        });
-
-      } break;
+        }
+        break;
       case 'getLicenses':
-      {
-         ServerConnection.makeRequest(licensesUrl, {}, serverSettings).then(
-          async (response) => {
-            const json = await response.json();
-            _failsCallbacks.postMessageToFails!({
-              requestId: event.data.requestId,
-              task: 'getLicenses',
-              licenses: json
-            })}).catch((error) => {_failsCallbacks.postMessageToFails!({
-              requestId: event.data.requestId,
-              task: 'getLicenses',
-              error: error.toString()
+        {
+          ServerConnection.makeRequest(licensesUrl, {}, serverSettings)
+            .then(async response => {
+              const json = await response.json();
+              _failsCallbacks.postMessageToFails!({
+                requestId: event.data.requestId,
+                task: 'getLicenses',
+                licenses: json
+              });
+            })
+            .catch(error => {
+              _failsCallbacks.postMessageToFails!({
+                requestId: event.data.requestId,
+                task: 'getLicenses',
+                error: error.toString()
+              });
             });
-
-          }
-         )
-
-      }break;
-      
-     
+        }
+        break;
     }
   });
 
