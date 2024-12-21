@@ -24,6 +24,7 @@
       "@jupyterlab/mainmenu-extension:recents",
       "@jupyterlab/console-extension",
       "@jupyterlab/tooltip-extension:consoles",
+      "@jupyterlab/help-extension:licenses",
       "@jupyter-notebook/console-extension",
       "@jupyter-notebook/application-extension:pages",
       "@jupyter-notebook/application-extension:opener",
