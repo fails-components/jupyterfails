@@ -16,7 +16,8 @@ import {
   Panel,
   BoxLayout,
   PanelLayout,
-  AccordionLayout
+  AccordionLayout,
+  Title
 } from '@lumino/widgets';
 import { MainAreaWidget } from '@jupyterlab/apputils';
 import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
@@ -35,7 +36,7 @@ import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
 
 export class AppletViewOutputArea extends AccordionPanel {
   constructor(options: AppletViewOutputArea.IOptions) {
-    super();
+    super({ renderer: new AppletViewRenderer() });
     const trans = (options.translator || nullTranslator).load('jupyterlab');
     this._notebook = options.notebook;
     this._inLecture = false;
@@ -239,8 +240,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     if (removedPart.length > 0) {
       const cell = removedPart[0].cell;
       if (typeof cell !== 'undefined') {
-        this.removeFromObserver(appIndex, cell)
-
+        this.removeFromObserver(appIndex, cell);
       }
     }
 
@@ -249,7 +249,7 @@ export class AppletViewOutputArea extends AccordionPanel {
 
     layout.removeWidgetAt(todeleteIndex);
 
-    this.informResize(this._applets[appIndex])
+    this.informResize(this._applets[appIndex]);
     // trigger an update ?
     this._viewChanged.emit();
   }
@@ -275,7 +275,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     const app = this.widgets[appIndex] as Panel;
     const layout = app.layout as BoxLayout;
     layout.insertWidget(tomoveIndex + delta, layout.widgets[tomoveIndex]);
-    this.informResize(this._applets[appIndex])
+    this.informResize(this._applets[appIndex]);
     // trigger an update ?
     this._viewChanged.emit();
   }
@@ -365,8 +365,8 @@ export class AppletViewOutputArea extends AccordionPanel {
       const appSrcLayout = this.layout as BoxLayout;
       appSrcLayout.removeWidgetAt(appIndex);
     }
-    this.informResize(this._applets[appIndex])
-    this.informResize(this._applets[appIndex +  delta])
+    this.informResize(this._applets[appIndex]);
+    this.informResize(this._applets[appIndex + delta]);
     // trigger an update ?
     this._viewChanged.emit();
   }
@@ -419,7 +419,8 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
     for (const applet of applets) {
       const appid = applet.appid ?? UUID.uuid4();
-      this.addApplet({ appid });
+      const appname = applet.appname;
+      this.addApplet({ appid, appname });
       for (const part of applet.parts) {
         console.log('loaddata', part);
         if (part.index || part.id) {
@@ -440,9 +441,10 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
     // TODO add element to widgets
     appletIndex = this._applets.length;
+    appname = appname || 'Applet ' + Math.random().toString(36).slice(2, 6);
     this._applets.push({
       appid,
-      appname: appname || 'Applet ' + Math.random().toString(36).slice(2, 6),
+      appname: appname,
       observer: new ResizeObserver(
         (entries: ResizeObserverEntry[], observer: ResizeObserver) =>
           this.resizeEvent(appid, entries, observer)
@@ -453,8 +455,11 @@ export class AppletViewOutputArea extends AccordionPanel {
     const panel = new Panel({});
     BoxLayout.setStretch(panel, 1);
     panel.addClass('fl-jp-Applet');
-    panel.title.label = appname || 'Applet ' + this._applets.length;
+    panel.title.label = appname;
     panel.title.caption = panel.title.label;
+    panel.title.changed.connect((title: Title<Widget>) => {
+      this._applets[appletIndex].appname = title.label;
+    });
     layout.insertWidget(appletIndex, panel);
 
     return panel;
@@ -592,11 +597,11 @@ export class AppletViewOutputArea extends AccordionPanel {
     // inform about the new sizes
     let width = 0;
     let height = 0;
-    console.log('peek inform resize')
     for (const part of applet.parts) {
-      console.log('peek inform resize part', part)
-      if (typeof part.sizes === 'undefined') continue
-      const { width : ewidth, height : eheight } = part.sizes
+      if (typeof part.sizes === 'undefined') {
+        continue;
+      }
+      const { width: ewidth, height: eheight } = part.sizes;
       height += eheight;
       width = Math.max(ewidth, width);
     }
@@ -613,22 +618,34 @@ export class AppletViewOutputArea extends AccordionPanel {
     observer: ResizeObserver
   ): void {
     const applet = this._applets.find(applet => applet.appid === appid);
-    if (typeof applet === 'undefined') return;
+    if (typeof applet === 'undefined') {
+      return;
+    }
     let updated = false;
     for (const entry of entries) {
-      const part = applet.parts.find(part => part?.clone?.node === entry.target)
-      if (!part) continue
-      if (!entry.borderBoxSize[0]) continue
-      const size = entry.borderBoxSize[0];
-      if (size.inlineSize === 0 || size.blockSize === 0) continue // do not store collapsed values
-      part.sizes = {
-        width : size.inlineSize,
-        height: size.blockSize
+      const part = applet.parts.find(
+        part => part?.clone?.node === entry.target
+      );
+      if (!part) {
+        continue;
       }
-      updated = true
+      if (!entry.borderBoxSize[0]) {
+        continue;
+      }
+      const size = entry.borderBoxSize[0];
+      if (size.inlineSize === 0 || size.blockSize === 0) {
+        continue;
+      } // do not store collapsed values
+      part.sizes = {
+        width: size.inlineSize,
+        height: size.blockSize
+      };
+      updated = true;
     }
-    if (!updated) return
-    this.informResize(applet)
+    if (!updated) {
+      return;
+    }
+    this.informResize(applet);
   }
 
   /* hasId(id: string): boolean {
@@ -673,6 +690,23 @@ export class AppletViewOutputArea extends AccordionPanel {
     } else {
       splitLayout.titleSpace = 22;
     }
+  }
+
+  // override base class
+  handleEvent(event: Event): void {
+    if (event.type === 'click') {
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'SPAN' || target.tagName === 'INPUT') {
+        return;
+      }
+    }
+    if (['keydown', 'keypress', 'keyup'].includes(event.type)) {
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'INPUT') {
+        return; // do not call preventDefault
+      }
+    }
+    super.handleEvent(event);
   }
 
   private _notebook: SplitViewNotebookPanel;
@@ -820,4 +854,68 @@ export class AppletViewOutputAreaPart
   private _notebook: NotebookPanel;
   private _clone: Widget | undefined;
   private _cloned = new Signal<this, void>(this);
+}
+
+export class AppletViewRenderer extends AccordionPanel.Renderer {
+  createSectionTitle(data: Title<Widget>): HTMLElement {
+    const handle = document.createElement('h3');
+    handle.setAttribute('tabindex', '0');
+    handle.id = this.createTitleKey(data);
+    handle.className = this.titleClassName;
+    for (const aData in data.dataset) {
+      handle.dataset[aData] = data.dataset[aData];
+    }
+
+    const collapser = handle.appendChild(this.createCollapseIcon(data));
+    collapser.className = 'lm-AccordionPanel-titleCollapser';
+    console.log('createSectiontitle');
+
+    let title = data.caption || data.label;
+
+    const staticLabel = document.createElement('span');
+    staticLabel.className = 'lm-AccordionPanel-titleLabel';
+    staticLabel.textContent = data.label;
+    staticLabel.title = title;
+
+    handle.appendChild(staticLabel);
+
+    const editLabel = document.createElement('input');
+    editLabel.className = 'lm-AccordionPanel-titleLabelEdit';
+    editLabel.type = 'text';
+    editLabel.value = data.label;
+    editLabel.title = title;
+
+    staticLabel.addEventListener('click', (ev: MouseEvent) => {
+      handle.removeChild(staticLabel);
+      handle.appendChild(editLabel);
+    });
+    editLabel.addEventListener('blur', (ev: FocusEvent) => {
+      handle.removeChild(editLabel);
+      handle.appendChild(staticLabel);
+    });
+    editLabel.addEventListener('keydown', (ev: KeyboardEvent) => {
+      if (ev.key === 'Enter') {
+        handle.removeChild(editLabel);
+        handle.appendChild(staticLabel);
+      }
+      return true;
+    });
+    editLabel.addEventListener('change', event => {
+      const target = event.target as HTMLInputElement | null;
+      if (target === editLabel) {
+        const newValue = target?.value;
+        if (newValue && newValue !== title) {
+          title = newValue;
+          data.caption = title;
+          data.label = title;
+          staticLabel.title = title;
+          staticLabel.textContent = title;
+        }
+      }
+      handle.removeChild(editLabel);
+      handle.appendChild(staticLabel);
+    });
+
+    return handle;
+  }
 }
