@@ -4,8 +4,10 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
+import { ServerConnection } from '@jupyterlab/services';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { IDocumentWidget } from '@jupyterlab/docregistry';
+import { PageConfig, URLExt } from '@jupyterlab/coreutils';
 import { ITranslator } from '@jupyterlab/translation';
 import { INotebookTracker, NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
 import { AppletViewToolbarExtension } from './avtoolbarextension';
@@ -170,6 +172,9 @@ function activateFailsLauncher(
   const { docRegistry } = app;
   const failsLauncherInfo: IFailsLauncherInfo = new FailsLauncherInfo();
   let currentDocWidget: IDocumentWidget | undefined;
+
+  const serverSettings = app.serviceManager.serverSettings;
+  const licensesUrl = URLExt.join(PageConfig.getBaseUrl(), PageConfig.getOption('licensesUrl')) + '/';
 
   // Install Messagehandler
   if (!(window as any).failsCallbacks) {
@@ -349,6 +354,25 @@ function activateFailsLauncher(
         });
 
       } break;
+      case 'getLicenses':
+      {
+         ServerConnection.makeRequest(licensesUrl, {}, serverSettings).then(
+          async (response) => {
+            const json = await response.json();
+            _failsCallbacks.postMessageToFails!({
+              requestId: event.data.requestId,
+              task: 'getLicenses',
+              licenses: json
+            })}).catch((error) => {_failsCallbacks.postMessageToFails!({
+              requestId: event.data.requestId,
+              task: 'getLicenses',
+              error: error.toString()
+            });
+
+          }
+         )
+
+      }break;
       
      
     }
