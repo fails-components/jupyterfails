@@ -383,7 +383,8 @@ export class AppletViewOutputArea extends AccordionPanel {
         index: part.index,
         id: part.id
       })),
-      appid: applet.appid
+      appid: applet.appid,
+      appname: applet.appname
     }));
     return { applets };
   }
@@ -459,6 +460,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     panel.title.caption = panel.title.label;
     panel.title.changed.connect((title: Title<Widget>) => {
       this._applets[appletIndex].appname = title.label;
+      this._viewChanged.emit();
     });
     layout.insertWidget(appletIndex, panel);
 
