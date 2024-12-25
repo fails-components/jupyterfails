@@ -50,6 +50,7 @@ export class SplitViewNotebookPanel extends NotebookPanel {
       this.toolbar.hide();
       this.addClass('fl-jl-notebook-inlecture');
       this._appletviewWidget.inLecture = true;
+      content.hide();
       splitPanel.setRelativeSizes([0, 1]); // change sizes
     }
     if (failsLauncherInfo) {
@@ -71,6 +72,12 @@ export class SplitViewNotebookPanel extends NotebookPanel {
           }
         }
       );
+      if (
+        failsLauncherInfo.inLecture &&
+        typeof failsLauncherInfo.selectedAppid !== 'undefined'
+      ) {
+        widget.selectApplet(failsLauncherInfo.selectedAppid);
+      }
       failsLauncherInfo.selectedAppidChanged.connect(
         (sender: IFailsLauncherInfo, appid: string | undefined) => {
           if (typeof appid !== 'undefined') {

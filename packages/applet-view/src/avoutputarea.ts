@@ -422,6 +422,13 @@ export class AppletViewOutputArea extends AccordionPanel {
       const appid = applet.appid ?? UUID.uuid4();
       const appname = applet.appname;
       this.addApplet({ appid, appname });
+      if (
+        typeof this._selectedAppid !== 'undefined' &&
+        appid !== this._selectedAppid
+      ) {
+        this.collapse(this._applets.length - 1);
+      }
+
       for (const part of applet.parts) {
         console.log('loaddata', part);
         if (part.index || part.id) {
@@ -579,6 +586,7 @@ export class AppletViewOutputArea extends AccordionPanel {
   }
 
   selectApplet(selectedAppid: string) {
+    this._selectedAppid = selectedAppid;
     for (let i = 0; i < this._applets.length; i++) {
       const applet = this._applets[i];
       if (applet.appid === selectedAppid) {
@@ -713,6 +721,7 @@ export class AppletViewOutputArea extends AccordionPanel {
 
   private _notebook: SplitViewNotebookPanel;
   private _applets: IViewApplet[];
+  private _selectedAppid: string | undefined;
   private _viewChanged = new Signal<this, void>(this);
   private _inLecture: boolean;
 }

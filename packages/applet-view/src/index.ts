@@ -52,6 +52,7 @@ export interface IFailsLauncherInfo extends IFailsLauncherInit {
 export interface ILoadJupyterInfo {
   type: 'loadJupyter';
   inLecture: boolean;
+  appid: string;
   fileName: string;
   fileData: object | undefined; // TODO replace object with meaning full type
   kernelName: 'python' | 'xpython' | undefined;
@@ -265,6 +266,9 @@ function activateFailsLauncher(
                   ref: '_noref'
                 }
               );
+              if (loadJupyterInfo.appid) {
+                failsLauncherInfo.selectedAppid = loadJupyterInfo.appid;
+              }
             })
             .catch(error => {
               console.log('Problem task load file', error);
