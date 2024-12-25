@@ -8,3 +8,6 @@ dependencies:
   - ipycanvas
   - ipywidgets
   - matplotlib
+  - plotly
+  - pandas
+  - nbformat
