@@ -54,7 +54,7 @@ export class AppletViewOutputArea extends AccordionPanel {
             parts: parts.map(
               el =>
                 new AppletViewOutputAreaPart({
-                  index: el.index !== undefined ? el.index : -1,
+                  index: el.index ?? -1,
                   cell: el.cell || undefined,
                   notebook: this._notebook
                 })
@@ -81,18 +81,32 @@ export class AppletViewOutputArea extends AccordionPanel {
       this._applets.forEach(({ parts, appid }) => {
         // TODO: Count applets
         console.log('parts loop before');
-        parts.forEach(part => {
-          if (!part.cell && typeof part.index !== 'undefined') {
-            part.cell = this._notebook.content.widgets[part.index] as Cell;
-            console.log('Inspect part cell');
-            const codeCell = part.cell as CodeCell;
-            const outputAreaModel: IOutputAreaModel = codeCell.outputArea.model;
-            for (let i = 0; i < outputAreaModel.length; i++) {
-              const cur = outputAreaModel.get(i);
-              console.log('Output model:', i, cur);
-              cur.changed.connect(() => {
-                console.log('Model changed', i, cur, outputAreaModel.get(i));
-              });
+        const damagedParts: number[] = [];
+        parts.forEach((part, index) => {
+          if (
+            !part.cell &&
+            typeof part.index !== 'undefined' &&
+            part.index >= 0
+          ) {
+            const currentcell = this._notebook.content.widgets[
+              part.index
+            ] as Cell;
+            if (currentcell.model.id === part.id) {
+              part.cell = currentcell;
+              console.log('Inspect part cell');
+              const codeCell = part.cell as CodeCell;
+              const outputAreaModel: IOutputAreaModel =
+                codeCell.outputArea.model;
+              for (let i = 0; i < outputAreaModel.length; i++) {
+                const cur = outputAreaModel.get(i);
+                console.log('Output model:', i, cur);
+                cur.changed.connect(() => {
+                  console.log('Model changed', i, cur, outputAreaModel.get(i));
+                });
+              }
+            } else {
+              // ok this looks like damaged data
+              damagedParts.push(index);
             }
           }
           if (!part.cell /* || part.cell.model.type !== 'code' */) {
@@ -127,6 +141,12 @@ export class AppletViewOutputArea extends AccordionPanel {
             });
           }
         });
+        if (damagedParts.length > 0) {
+          // remove damaged items for the list
+          for (let i = damagedParts.length - 1; i >= 0; i--) {
+            parts.splice(damagedParts[i], 1);
+          }
+        }
       });
       this._viewChanged.emit();
     });
@@ -431,7 +451,7 @@ export class AppletViewOutputArea extends AccordionPanel {
 
       for (const part of applet.parts) {
         console.log('loaddata', part);
-        if (part.index || part.id) {
+        if (typeof part.index !== 'undefined' || part.id) {
           this.addPart(appid, {
             index: part.index,
             id: part.id
@@ -563,7 +583,11 @@ export class AppletViewOutputArea extends AccordionPanel {
     applet.parts.push(topush);
     if (this._notebook.context.isReady) {
       // it is already ready, so we can not rely on the global code for adding to the view
-      if (!topush.cell && part.index) {
+      if (
+        !topush.cell &&
+        typeof part.index !== 'undefined' &&
+        part.index >= 0
+      ) {
         topush.cell = this._notebook.content.widgets[part.index] as CodeCell;
       }
       if (topush.cell) {
@@ -798,7 +822,7 @@ export class AppletViewOutputAreaPart
 {
   constructor(args: IAppletPartOptions) {
     this._cell = args.cell;
-    this._index = args.index || -1;
+    this._index = args.index ?? -1;
     this._id = args.id || this._cell?.model.id;
     this._notebook = args.notebook;
   }
@@ -808,10 +832,13 @@ export class AppletViewOutputAreaPart
    */
   get index(): number {
     if (this._id) {
-      return ArrayExt.findFirstIndex(
+      const ind = ArrayExt.findFirstIndex(
         this._notebook.content.widgets,
         c => c.model.id === this._id
       );
+      if (ind !== -1) {
+        return ind;
+      }
     }
     return this._cell
       ? ArrayExt.findFirstIndex(
