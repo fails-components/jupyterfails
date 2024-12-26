@@ -8,6 +8,7 @@ import { ServerConnection } from '@jupyterlab/services';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { IDocumentWidget } from '@jupyterlab/docregistry';
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
+import { ISessionContext } from '@jupyterlab/apputils';
 import { ITranslator } from '@jupyterlab/translation';
 import {
   INotebookTracker,
@@ -269,6 +270,14 @@ function activateFailsLauncher(
               if (loadJupyterInfo.appid) {
                 failsLauncherInfo.selectedAppid = loadJupyterInfo.appid;
               }
+              currentDocWidget?.context.sessionContext.statusChanged.connect(
+                (context: ISessionContext, status: Kernel.Status) => {
+                  _failsCallbacks.postMessageToFails!({
+                    task: 'reportKernelStatus',
+                    status
+                  });
+                }
+              );
             })
             .catch(error => {
               console.log('Problem task load file', error);
