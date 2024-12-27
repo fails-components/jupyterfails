@@ -83,7 +83,6 @@ export class AppletViewOutputArea extends AccordionPanel {
       this._applets.forEach(({ parts, appid }) => {
         // TODO: Count applets
         console.log('parts loop before');
-        const damagedParts: number[] = [];
         parts.forEach((part, index) => {
           if (
             !part.cell &&
@@ -93,22 +92,16 @@ export class AppletViewOutputArea extends AccordionPanel {
             const currentcell = this._notebook.content.widgets[
               part.index
             ] as Cell;
-            if (currentcell.model.id === part.id) {
-              part.cell = currentcell;
-              console.log('Inspect part cell');
-              const codeCell = part.cell as CodeCell;
-              const outputAreaModel: IOutputAreaModel =
-                codeCell.outputArea.model;
-              for (let i = 0; i < outputAreaModel.length; i++) {
-                const cur = outputAreaModel.get(i);
-                console.log('Output model:', i, cur);
-                cur.changed.connect(() => {
-                  console.log('Model changed', i, cur, outputAreaModel.get(i));
-                });
-              }
-            } else {
-              // ok this looks like damaged data
-              damagedParts.push(index);
+            part.cell = currentcell;
+            console.log('Inspect part cell');
+            const codeCell = part.cell as CodeCell;
+            const outputAreaModel: IOutputAreaModel = codeCell.outputArea.model;
+            for (let i = 0; i < outputAreaModel.length; i++) {
+              const cur = outputAreaModel.get(i);
+              console.log('Output model:', i, cur);
+              cur.changed.connect(() => {
+                console.log('Model changed', i, cur, outputAreaModel.get(i));
+              });
             }
           }
           if (!part.cell /* || part.cell.model.type !== 'code' */) {
@@ -143,12 +136,6 @@ export class AppletViewOutputArea extends AccordionPanel {
             });
           }
         });
-        if (damagedParts.length > 0) {
-          // remove damaged items for the list
-          for (let i = damagedParts.length - 1; i >= 0; i--) {
-            parts.splice(damagedParts[i], 1);
-          }
-        }
       });
       this._viewChanged.emit();
     });
@@ -871,7 +858,15 @@ export class AppletViewOutputAreaPart
   set cell(value: Cell | undefined) {
     console.log('debug cell assign', value?.model.id, this._id);
     if (value?.model.id !== this._id) {
-      throw new Error('Can not assign a cell with different id');
+      // throw new Error('Can not assign a cell with different id');
+      console.log(
+        'ASSIGNING CELL with different id',
+        value?.model.id,
+        this._id
+      );
+    }
+    if (this._cell?.model.id !== value?.model.id) {
+      console.log('ASSIGNING CELL id change', value?.model.id, this._id);
     }
     this._cell = value;
   }
