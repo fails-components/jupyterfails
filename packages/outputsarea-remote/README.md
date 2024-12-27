@@ -4,6 +4,7 @@
 
 This is an extension, that contains bits and piece to tunnel model updates to a remote outputview.
 It is probably only useful within fails-components' jupyter lite installation.
+This experimental code is probably removed soon.
 
 ## Requirements
 

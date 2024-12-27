@@ -1,3 +1,5 @@
+This is outdated and needs to be updated.
+
 # Making a new release of fails_components_jupyter_applet_view
 
 The extension can be published to `PyPI` and `npm` manually or using the [Jupyter Releaser](https://github.com/jupyter-server/jupyter_releaser).
