@@ -10,6 +10,7 @@ import {
 import { BoxLayout, SplitPanel } from '@lumino/widgets';
 import { AppletViewOutputArea } from './avoutputarea';
 import { IFailsLauncherInfo } from './index';
+import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 interface IAppletResizeEvent {
   appid: string;
@@ -20,7 +21,8 @@ interface IAppletResizeEvent {
 export class SplitViewNotebookPanel extends NotebookPanel {
   constructor(
     options: DocumentWidget.IOptions<Notebook, INotebookModel>,
-    failsLauncherInfo: IFailsLauncherInfo | undefined
+    failsLauncherInfo: IFailsLauncherInfo | undefined,
+    failsInterceptor: IFailsInterceptor | undefined
   ) {
     super(options);
     this._failsLauncherInfo = failsLauncherInfo;
@@ -41,7 +43,8 @@ export class SplitViewNotebookPanel extends NotebookPanel {
     const widget = (this._appletviewWidget = new AppletViewOutputArea({
       notebook: this,
       applets: undefined,
-      translator: options.translator
+      translator: options.translator,
+      interceptor: failsInterceptor
     }));
     splitPanel.addWidget(widget);
     layout.addWidget(splitPanel);
@@ -121,6 +124,7 @@ namespace SplitViewNotebookWidgetFactory {
   export interface IOptions
     extends NotebookWidgetFactory.IOptions<NotebookPanel> {
     failsLauncherInfo?: IFailsLauncherInfo;
+    failsInterceptor?: IFailsInterceptor;
   }
 }
 
@@ -128,6 +132,7 @@ export class SplitViewNotebookWidgetFactory extends NotebookWidgetFactory {
   constructor(options: SplitViewNotebookWidgetFactory.IOptions) {
     super(options);
     this._failsLauncherInfo = options.failsLauncherInfo;
+    this._failsInterceptor = options.failsInterceptor;
   }
   protected createNewWidget(
     context: DocumentRegistry.IContext<INotebookModel>,
@@ -161,9 +166,11 @@ export class SplitViewNotebookWidgetFactory extends NotebookWidgetFactory {
         context,
         content
       },
-      this._failsLauncherInfo
+      this._failsLauncherInfo,
+      this._failsInterceptor
     );
   }
 
   private _failsLauncherInfo: IFailsLauncherInfo | undefined;
+  private _failsInterceptor: IFailsInterceptor | undefined;
 }

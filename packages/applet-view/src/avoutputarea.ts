@@ -21,6 +21,7 @@ import {
 } from '@lumino/widgets';
 import { MainAreaWidget } from '@jupyterlab/apputils';
 import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
+import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -40,6 +41,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     const trans = (options.translator || nullTranslator).load('jupyterlab');
     this._notebook = options.notebook;
     this._inLecture = false;
+    this._interceptor = options.interceptor;
     if (options.applets !== undefined) {
       this._applets = options.applets.map(
         ({ parts, appid: oldAppid, appname }, index) => {
@@ -153,9 +155,17 @@ export class AppletViewOutputArea extends AccordionPanel {
   }
 
   cloneCell(cell: Cell, cellid: string): Widget {
+    const interceptorSupportedMime = this._interceptor?.isMimeTypeSupported?.(
+      cell.model.mimeType
+    )
+      ? true
+      : false;
     if (cell.model.type === 'code') {
       const codeCell = cell as CodeCell;
       const clone = codeCell.cloneOutputArea();
+      if (!interceptorSupportedMime) {
+        clone.addClass('fl-jl-cell-interceptor-unsupported');
+      }
       // code for remote model
       /*
         const channel = new MessageChannel();
@@ -179,6 +189,9 @@ export class AppletViewOutputArea extends AccordionPanel {
       return clone;
     } else {
       const clone = cell.clone();
+      if (!interceptorSupportedMime) {
+        clone.addClass('fl-jl-cell-interceptor-unsupported');
+      }
       // @ts-expect-error cellid does not exist on type
       clone.cellid = cellid;
       // @ts-expect-error cellid does not exist on type
@@ -748,6 +761,7 @@ export class AppletViewOutputArea extends AccordionPanel {
   private _selectedAppid: string | undefined;
   private _viewChanged = new Signal<this, void>(this);
   private _inLecture: boolean;
+  private _interceptor: IFailsInterceptor | undefined;
 }
 /**
  * AppletViewOutputArea statics.
@@ -785,6 +799,8 @@ export namespace AppletViewOutputArea {
     applets?: IApplet[];
 
     translator?: ITranslator;
+
+    interceptor?: IFailsInterceptor;
   }
 }
 export interface IViewPartBase extends AppletViewOutputArea.IAppletPart {

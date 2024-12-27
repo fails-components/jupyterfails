@@ -24,12 +24,13 @@ import { PartialJSONObject, Token } from '@lumino/coreutils';
 import { IFailsCallbacks } from './failscallbacks';
 import { Panel } from '@lumino/widgets';
 import { ISignal, Signal } from '@lumino/signaling';
+import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 export * from './failscallbacks';
 
 export const IFailsLauncherInfo = new Token<IFailsLauncherInfo>(
   '@fails-components/jupyter-fails:IFailsLauncherInfo',
-  'A service to commincate with FAILS.'
+  'A service to communicate with FAILS.'
 );
 export interface IFailsLauncherInit {
   inLecture: boolean;
@@ -428,7 +429,7 @@ const appletView: JupyterFrontEndPlugin<void> = {
   description:
     "An extension, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. ",
   requires: [IDocumentManager, INotebookTracker, ITranslator],
-  optional: [ILayoutRestorer, IFailsLauncherInfo],
+  optional: [ILayoutRestorer, IFailsLauncherInfo, IFailsInterceptor],
   autoStart: true,
   activate: activateAppletView
 };

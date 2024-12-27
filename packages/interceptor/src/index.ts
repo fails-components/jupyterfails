@@ -20,8 +20,39 @@ import {
 } from '@jupyterlab/rendermime';
 import { ICellModel } from '@jupyterlab/cells';
 import { ISharedCodeCell } from '@jupyter/ydoc';
-import { JSONObject, PromiseDelegate } from '@lumino/coreutils';
+import { JSONObject, PromiseDelegate, Token } from '@lumino/coreutils';
 import { Kernel } from '@jupyterlab/services';
+
+export interface IFailsInterceptor {
+  isMimeTypeSupported: (mimeType: string) => boolean;
+}
+
+export const IFailsInterceptor = new Token<IFailsInterceptor>(
+  '@fails-components/jupyter-fails:IFailsInterceptor',
+  'A service to talk with FAILS interceptor.'
+);
+
+// List of static Mimetypes, where intercepting is not necessary
+const staticMimeTypes = new Set([
+  'text/html',
+  'image/bmp',
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
+  'text/latex',
+  'text/markdown',
+  'image/svg+xml',
+  'application/vnd.jupyter.stderr',
+  'application/vnd.jupyter.stdout'
+  /* 'text/javascript', 'application/javascript' We need to check, what do about it
+   */
+]);
+// List of dynamic Mimetypes, where intercepting is currently handled
+const dynamicMimeTypes = new Set<string>([
+  /* 'application/vnd.jupyter.widget-view+json',
+  'application/vnd.plotly.v1+json' */
+]);
 
 export class AppletWidgetRegistry {
   registerModel(path: string, modelId: string) {
@@ -65,14 +96,19 @@ function activateWidgetInterceptor(
   app: JupyterFrontEnd,
   notebookTracker: INotebookTracker,
   rendermimeRegistry: IRenderMimeRegistry
-): void {
+): IFailsInterceptor {
   if (app.namespace === 'JupyterLite Server') {
-    return;
+    return { isMimeTypeSupported: (mimeType: string) => false };
   }
   const addKernelInterceptor = (kernel: Kernel.IKernelConnection) => {
     console.log('Install Kernel interceptor', kernel);
     kernel.anyMessage.connect((sender, args) => {
-      console.log('Intercept any message', sender, args);
+      console.log(
+        'Intercept any message',
+        args,
+        args?.msg?.header?.msg_id,
+        args?.msg?.header?.msg_type
+      );
       const { direction, msg } = args;
       if (direction === 'send') {
         // send from the control
@@ -390,17 +426,29 @@ function activateWidgetInterceptor(
       });
     }
   );
+  return {
+    isMimeTypeSupported: (mimeType: string) => {
+      if (staticMimeTypes.has(mimeType)) {
+        return true;
+      }
+      if (dynamicMimeTypes.has(mimeType)) {
+        return true;
+      }
+      return false;
+    }
+  };
 }
 
-const appletWidgetInterceptor: JupyterFrontEndPlugin<void> = {
+const appletWidgetInterceptor: JupyterFrontEndPlugin<IFailsInterceptor> = {
   id: '@fails-components/jupyter-applet-widget:interceptor',
   description: 'Tracks and intercepts widget communication',
-  autoStart: false,
+  autoStart: true,
   activate: activateWidgetInterceptor,
+  provides: IFailsInterceptor,
   requires: [INotebookTracker, IRenderMimeRegistry],
   optional: []
 };
 
-const plugins: JupyterFrontEndPlugin<void>[] = [appletWidgetInterceptor];
+const plugins: JupyterFrontEndPlugin<any>[] = [appletWidgetInterceptor];
 
 export default plugins;

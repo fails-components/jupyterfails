@@ -101,3 +101,16 @@
 body[data-notebook='notebooks'] .jp-WindowedPanel-inner {
     margin-top: 0;
 }
+
+.jp-OutputArea.fl-jl-cell-interceptor-unsupported:not(.fl-jl-notebook-inlecture *)::after {
+    content: "Network transmission of this output is unsupported.";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); 
+    color: red;
+    padding: 2px 4px; 
+    font-size: 1em;
+    font-weight: bold; 
+    text-align: start;
+}
