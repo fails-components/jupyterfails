@@ -37,7 +37,8 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the fails_components_jupyter_applet_view directory
+# Change directory to the fails_components_jupyter_interceptor directory
+jlpm build
 # Install package in development mode
 pip install -e "."
 # Link your development version of the extension with JupyterLab

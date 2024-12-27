@@ -20,7 +20,7 @@ import {
 import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
 import { SplitViewNotebookWidgetFactory } from './splitviewnotebookpanel';
 import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
-import { IFailsLauncherInfo } from './index';
+import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
 import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 // portions used from Jupyterlab:

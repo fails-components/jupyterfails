@@ -12,7 +12,7 @@ import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
 import { AppletViewOutputArea, IViewPart } from './avoutputarea';
 import { Toolbar } from '@jupyterlab/ui-components';
 import { Signal } from '@lumino/signaling';
-import { IFailsLauncherInfo } from './index';
+import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------

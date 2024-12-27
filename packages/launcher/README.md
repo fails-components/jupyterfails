@@ -1,9 +1,9 @@
-# fails_components_jupyter_filesystem_extension
+# fails_components_jupyter_launcher
 
 [![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
 
-This is an extension, that taps into jupyter lite's filesystem handling to be able to remotely control and supply the files visible to jupyter lite.
-It is probably only useful within fails-components' jupyter lite installation.
+This is an extension, where jupyter can be steering inside an iframe.
+You can load, launch and save different notebooks and applets (created with applet-view extension).
 
 ## Requirements
 
@@ -14,7 +14,7 @@ It is probably only useful within fails-components' jupyter lite installation.
 To install the extension, execute:
 
 ```bash
-pip install fails_components_jupyter_filesystem_extension
+pip install fails_components_jupyter_launcher
 ```
 
 ## Uninstall
@@ -22,7 +22,7 @@ pip install fails_components_jupyter_filesystem_extension
 To remove the extension, execute:
 
 ```bash
-pip uninstall fails_components_jupyter_filesystem_extension
+pip uninstall fails_components_jupyter_launcher
 ```
 
 ## Contributing
@@ -37,7 +37,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the fails_components_jupyter_filesystem_extension directory
+# Change directory to the fails_components_jupyter_launcher directory
 jlpm build
 # Install package in development mode
 pip install -e "."
@@ -67,7 +67,7 @@ jupyter lab build --minimize=False
 ### Development uninstall
 
 ```bash
-pip uninstall fails_components_jupyter_filesystem_extension
+pip uninstall fails_components_jupyter_launcher
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`

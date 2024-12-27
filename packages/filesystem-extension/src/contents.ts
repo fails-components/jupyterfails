@@ -6,7 +6,7 @@ import {
   IContentEventType,
   ILoadJupyterContentEvent,
   ISavedJupyterContentEvent
-} from '@fails-components/jupyter-applet-view';
+} from '@fails-components/jupyter-launcher';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------

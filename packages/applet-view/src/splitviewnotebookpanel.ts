@@ -9,7 +9,7 @@ import {
 } from '@jupyterlab/notebook';
 import { BoxLayout, SplitPanel } from '@lumino/widgets';
 import { AppletViewOutputArea } from './avoutputarea';
-import { IFailsLauncherInfo } from './index';
+import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
 import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 interface IAppletResizeEvent {

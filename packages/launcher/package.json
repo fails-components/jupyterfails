@@ -1,7 +1,7 @@
 {
-    "name": "@fails-components/jupyter-applet-view",
+    "name": "@fails-components/jupyter-launcher",
     "version": "0.1.0",
-    "description": "A collection of extensions, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. ",
+    "description": "A collections of plugins steering an iframe with jupyter remotely",
     "keywords": [
         "jupyter",
         "jupyterlab",
@@ -39,7 +39,7 @@
         "clean": "jlpm clean:lib",
         "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
         "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-        "clean:labextension": "rimraf fails_components_jupyter_applet_view/labextension fails_components_jupyter_applet_view/_version.py",
+        "clean:labextension": "rimraf fails_components_jupyter_interceptor/labextension fails_components_jupyter_interceptor/_version.py",
         "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --ext .ts,.tsx",
@@ -57,13 +57,8 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@fails-components/jupyter-launcher": "workspace:^",
-        "@jupyter-notebook/application": "^7.0.0",
         "@jupyter-widgets/jupyterlab-manager": "^5.0.11",
-        "@jupyterlab/application": "^4.2.2",
-        "@jupyterlab/docmanager": "^4.2.2",
-        "@jupyterlab/docregistry": "^4.2.2",
-        "@jupyterlab/notebook": "^4.2.2",
+        "@jupyterlab/application": "^4.0.0",
         "@jupyterlite/application-extension": "^0.4.4",
         "@jupyterlite/contents": "^0.4.4",
         "@jupyterlite/server": "^0.4.4",
@@ -107,11 +102,8 @@
     },
     "jupyterlab": {
         "extension": true,
-        "outputDir": "fails_components_jupyter_applet_view/labextension",
+        "outputDir": "fails_components_jupyter_launcher/labextension",
         "schemaDir": "schema"
-    },
-    "jupyterlite": {
-        "liteExtension": false
     },
     "eslintIgnore": [
         "node_modules",
