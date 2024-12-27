@@ -322,17 +322,17 @@ export class OutputAreaModelRemote implements IOutputAreaModel {
   }
 
   set(index: number, output: IOutput): void {
-    throw new Error('set to sender to implemented');
+    throw new Error('set to sender to be implemented');
     // return this._model.set(index, output);
   }
 
   add(output: IOutput): number {
-    throw new Error('add to sender to implemented');
+    throw new Error('add to sender to be implemented');
     // return this._model.add(output);
   }
 
   clear(wait?: boolean) {
-    throw new Error('ckear to sender to implemented');
+    throw new Error('clear to sender to be implemented');
     // return this._model.clear(wait);
   }
 
@@ -341,7 +341,19 @@ export class OutputAreaModelRemote implements IOutputAreaModel {
   }
 
   fromJSON(values: IOutput[]): void {
-    throw new Error('fromJSON to sender to implemented');
+    throw new Error('fromJSON to sender to be implemented');
+  }
+
+  removeStreamOutput(number: number): void {
+    throw new Error('removeStreamOutput to be implemented');
+  }
+
+  appendStreamOutput(text: string): void {
+    throw new Error('appendStreamOutput to be implemented');
+  }
+
+  remove(index: number): void {
+    throw new Error('remove to be implemented');
   }
 
   private _remotePort: MessagePort;
