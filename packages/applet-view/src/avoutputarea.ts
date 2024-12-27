@@ -150,7 +150,7 @@ export class AppletViewOutputArea extends AccordionPanel {
     if (cell.model.type === 'code') {
       const codeCell = cell as CodeCell;
       const clone = codeCell.cloneOutputArea();
-      if (!interceptorSupportedMime) {
+      if (this._interceptor && !interceptorSupportedMime) {
         clone.addClass('fl-jl-cell-interceptor-unsupported');
       }
       // code for remote model
@@ -176,7 +176,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       return clone;
     } else {
       const clone = cell.clone();
-      if (!interceptorSupportedMime) {
+      if (this._interceptor && !interceptorSupportedMime) {
         clone.addClass('fl-jl-cell-interceptor-unsupported');
       }
       // @ts-expect-error cellid does not exist on type
