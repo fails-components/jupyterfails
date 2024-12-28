@@ -50,6 +50,31 @@
     height: max-content;
 }
 
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        max-height: 50vh;
+    }
+
+    90% {
+        opacity: 0.1;
+        max-height: 50vh;
+    }
+
+    100% {
+        opacity: 0;
+        max-height: 0;
+    }
+}
+
+.fl-jl-notebook-inlecture [data-mime-type="application/vnd.jupyter.stderr"] {
+    opacity: 1;
+    max-height: 50vh;
+    overflow: hidden;
+    animation: fadeOut 2s ease forwards;
+    animation-delay: 2s;
+}
+
 .fl-jp-AppletViewToolbar {
     position: absolute;
     right: 0;
