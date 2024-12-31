@@ -65,6 +65,7 @@ export interface IFailsLauncherInfo extends IFailsLauncherInit {
 export interface ILoadJupyterInfo {
   type: 'loadJupyter';
   inLecture: boolean;
+  rerunAtStartup: boolean;
   appid: string;
   fileName: string;
   fileData: object | undefined; // TODO replace object with meaning full type
@@ -282,14 +283,39 @@ function activateFailsLauncher(
               if (loadJupyterInfo.appid) {
                 failsLauncherInfo.selectedAppid = loadJupyterInfo.appid;
               }
-              currentDocWidget?.context.sessionContext.statusChanged.connect(
-                (context: ISessionContext, status: Kernel.Status) => {
-                  _failsCallbacks.postMessageToFails!({
-                    task: 'reportKernelStatus',
-                    status
-                  });
-                }
-              );
+              let rerunAfterKernelStart = loadJupyterInfo.rerunAtStartup;
+              if (typeof currentDocWidget !== 'undefined') {
+                const notebookPanel = currentDocWidget as NotebookPanel;
+                notebookPanel.sessionContext.statusChanged.connect(
+                  (context: ISessionContext, status: Kernel.Status) => {
+                    _failsCallbacks.postMessageToFails!({
+                      task: 'reportKernelStatus',
+                      status
+                    });
+                    if (status === 'idle' && rerunAfterKernelStart) {
+                      console.log('Run all cells after startup');
+                      const { context, content } = notebookPanel;
+                      const cells = content.widgets;
+                      NotebookActions.runCells(
+                        content,
+                        cells,
+                        context.sessionContext
+                      )
+                        .then(() => {
+                          console.log('Run all cells after startup finished');
+                        })
+                        .catch(error => {
+                          console.log(
+                            'Run all cells after startup error',
+                            error
+                          );
+                        });
+
+                      rerunAfterKernelStart = false;
+                    }
+                  }
+                );
+              }
             })
             .catch(error => {
               console.log('Problem task load file', error);
