@@ -9,7 +9,11 @@ import {
 } from '@jupyterlab/notebook';
 import { BoxLayout, SplitPanel } from '@lumino/widgets';
 import { AppletViewOutputArea } from './avoutputarea';
-import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
+import {
+  IFailsLauncherInfo,
+  IAppletScreenshottaker,
+  IScreenShotOpts
+} from '@fails-components/jupyter-launcher';
 import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 interface IAppletResizeEvent {
@@ -18,7 +22,10 @@ interface IAppletResizeEvent {
   height: number;
 }
 
-export class SplitViewNotebookPanel extends NotebookPanel {
+export class SplitViewNotebookPanel
+  extends NotebookPanel
+  implements IAppletScreenshottaker
+{
   constructor(
     options: DocumentWidget.IOptions<Notebook, INotebookModel>,
     failsLauncherInfo: IFailsLauncherInfo | undefined,
@@ -114,6 +121,10 @@ export class SplitViewNotebookPanel extends NotebookPanel {
 
   get appletViewWidget() {
     return this._appletviewWidget;
+  }
+
+  async takeAppScreenshot(opts: IScreenShotOpts): Promise<Blob | undefined> {
+    return await this._appletviewWidget.takeAppScreenshot(opts);
   }
   /*
     private _splitPanel: SplitPanel; */

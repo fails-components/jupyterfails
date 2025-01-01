@@ -1664,6 +1664,7 @@ __metadata:
     eslint-plugin-prettier: ^5.0.0
     jest: ^29.2.0
     json5: ^2.2.3
+    modern-screenshot: ^4.5.5
     npm-run-all: ^4.1.5
     prettier: ^3.0.0
     rimraf: ^5.0.1
@@ -11228,6 +11229,13 @@ __metadata:
   version: 9.3.1
   resolution: "mock-socket@npm:9.3.1"
   checksum: cb2dde4fc5dde280dd5ccb78eaaa223382ee16437f46b86558017655584ad08c22e733bde2dd5cc86927def506b6caeb0147e3167b9a62d70d5cf19d44103853
+  languageName: node
+  linkType: hard
+
+"modern-screenshot@npm:^4.5.5":
+  version: 4.5.5
+  resolution: "modern-screenshot@npm:4.5.5"
+  checksum: 947408f24aed7ed961383cceb1cea13648d4350d8894d81774154e1f76efe34b860892e9603c02a325a81b6fb0e97c585041ca718610fc5ee36de26ad90962e6
   languageName: node
   linkType: hard
 

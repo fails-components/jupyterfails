@@ -20,8 +20,10 @@ import {
   Title
 } from '@lumino/widgets';
 import { MainAreaWidget } from '@jupyterlab/apputils';
+import { domToBlob } from 'modern-screenshot';
 import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
 import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
+import { IScreenShotOpts } from '@fails-components/jupyter-launcher';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -624,6 +626,33 @@ export class AppletViewOutputArea extends AccordionPanel {
   unselectApplet() {
     for (let i = 0; i < this._applets.length; i++) {
       this.expand(i);
+    }
+  }
+
+  async takeAppScreenshot(opts: IScreenShotOpts): Promise<Blob | undefined> {
+    if (typeof this._selectedAppid === 'undefined') {
+      throw new Error('No app selected');
+    }
+    const { dpi = undefined } = opts;
+    const appletIndex = this._applets.findIndex(
+      applet => applet.appid === this._selectedAppid
+    );
+    if (appletIndex === -1) {
+      throw new Error('No invalid app selected');
+    }
+    try {
+      const blob = await domToBlob(this.widgets[appletIndex].node, {
+        maximumCanvasSize: 4096,
+        scale: (dpi && dpi / 96) || undefined
+      });
+
+      if (blob === null) {
+        return undefined;
+      }
+      return blob;
+    } catch (error) {
+      //only throw if not returned
+      console.log('takeAppScreenshot error', error);
     }
   }
 

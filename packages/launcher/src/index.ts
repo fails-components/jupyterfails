@@ -14,6 +14,14 @@ import { PartialJSONObject, Token } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Panel } from '@lumino/widgets';
 
+export interface IScreenShotOpts {
+  dpi: number;
+}
+
+export interface IAppletScreenshottaker {
+  takeAppScreenshot: (opts: IScreenShotOpts) => Promise<Blob | undefined>;
+}
+
 interface IContentEvent {
   task: string;
 }
@@ -66,6 +74,7 @@ export interface ILoadJupyterInfo {
   type: 'loadJupyter';
   inLecture: boolean;
   rerunAtStartup: boolean;
+  installScreenShotPatches: boolean;
   appid: string;
   fileName: string;
   fileData: object | undefined; // TODO replace object with meaning full type
@@ -86,6 +95,36 @@ export interface IActivateApp {
   inLecture: boolean;
   appid: string;
 }
+
+export interface IScreenshotApp {
+  type: 'screenshotApp';
+  dpi: number;
+}
+
+let screenShotPatchInstalled = false;
+const installScreenShotPatches = () => {
+  if (screenShotPatchInstalled) {
+    return;
+  }
+
+  // Monkey patch the HTMLCanvasObject
+  const oldGetContext = HTMLCanvasElement.prototype.getContext;
+  // @ts-expect-error type do not matter
+  HTMLCanvasElement.prototype.getContext = function (
+    contexttype: string,
+    contextAttributes?:
+      | CanvasRenderingContext2DSettings
+      | WebGLContextAttributes
+  ) {
+    if (contexttype === 'webgl' || contexttype === 'webgl2') {
+      const newcontext = { ...contextAttributes } as any;
+      newcontext.preserveDrawingBuffer = true;
+      return oldGetContext.apply(this, [contexttype, newcontext]);
+    }
+    return oldGetContext.apply(this, [contexttype, contextAttributes]);
+  };
+  screenShotPatchInstalled = true;
+};
 
 class FailsLauncherInfo implements IFailsLauncherInfo {
   constructor(options?: IFailsLauncherInfo) {
@@ -254,6 +293,9 @@ function activateFailsLauncher(
           failsLauncherInfo.inLecture =
             loadJupyterInfo.inLecture ?? failsLauncherInfo.inLecture;
           docManager.autosave = false; // do not autosave
+          if (loadJupyterInfo.installScreenShotPatches) {
+            installScreenShotPatches();
+          }
           // TODO send fileData to contents together with filename, and wait for fullfillment
           // may be use a promise for fullfillment, e.g. pass a resolve
           // afterwards we load the file or new file into to the contexts
@@ -375,6 +417,52 @@ function activateFailsLauncher(
           } else {
             failsLauncherInfo.inLecture = false;
           }
+        }
+        break;
+      case 'screenshotApp':
+        {
+          const screenshotApp = event.data as IScreenshotApp;
+          const notebookPanel = currentDocWidget as NotebookPanel;
+          if (
+            !(typeof (notebookPanel as any)['takeAppScreenshot'] === 'function')
+          ) {
+            _failsCallbacks.postMessageToFails!({
+              requestId: event.data.requestId,
+              task: 'screenshotApp',
+              error: 'Take App Screenshot unsupported'
+            });
+          }
+          const screenShotTaker =
+            notebookPanel as any as IAppletScreenshottaker;
+          screenShotTaker
+            .takeAppScreenshot({ dpi: screenshotApp.dpi })
+            .then(async screenshot => {
+              if (screenshot) {
+                const data = await screenshot.arrayBuffer();
+                _failsCallbacks.postMessageToFails?.(
+                  {
+                    requestId: event.data.requestId,
+                    task: 'screenshotApp',
+                    screenshot: { data, type: screenshot.type }
+                  },
+                  [data]
+                ); // TODO add transferable
+              } else {
+                _failsCallbacks.postMessageToFails?.({
+                  requestId: event.data.requestId,
+                  task: 'screenshotApp',
+                  error: 'Screenshot failed?'
+                });
+              }
+            })
+            .catch((error: Error) => {
+              console.log('Screenshot error', error);
+              _failsCallbacks.postMessageToFails!({
+                requestId: event.data.requestId,
+                task: 'screenshotApp',
+                error: error.toString()
+              });
+            });
         }
         break;
       case 'restartKernelAndRerunCells':
