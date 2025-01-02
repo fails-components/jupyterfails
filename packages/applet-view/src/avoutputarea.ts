@@ -393,12 +393,6 @@ export class AppletViewOutputArea extends AccordionPanel {
     this._viewChanged.emit();
   }
 
-  /*
-   * The index of cells in the notebooks
-   */
-  /* get indices() {
-      return this._parts.map(part => part.index);
-    } */
   saveData() {
     const applets = this._applets.map(applet => ({
       parts: applet.parts.map(part => ({
