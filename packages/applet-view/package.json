@@ -57,6 +57,7 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
+        "@fails-components/jupyter-interceptor": "workspace:^",
         "@fails-components/jupyter-launcher": "workspace:^",
         "@jupyter-notebook/application": "^7.2.0",
         "@jupyter-widgets/jupyterlab-manager": "^5.0.13",
