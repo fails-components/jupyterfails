@@ -12,3 +12,7 @@ dependencies:
   - pandas
   - nbformat
   - numpy
+  - anywidget
+  - scipy
+  - sympy
+  - qutip
