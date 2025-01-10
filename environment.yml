@@ -16,3 +16,5 @@ dependencies:
   - scipy
   - sympy
   - qutip
+  - pip:
+    - quspin
