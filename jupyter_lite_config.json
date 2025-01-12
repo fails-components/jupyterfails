@@ -2,6 +2,7 @@
   "LiteBuildConfig": {
     "contents": [],
     "apps": ["notebooks"],
-    "output_dir": "jupyterLiteFailsOut"
+    "output_dir": "jupyterLiteFailsOut",
+    "base_url": "/jupyter/"
   }
 }
