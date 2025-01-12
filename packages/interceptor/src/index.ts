@@ -56,8 +56,8 @@ const staticMimeTypes = new Set([
 ]);
 // List of dynamic Mimetypes, where intercepting is currently handled
 const dynamicMimeTypes = new Set<string>([
-  /* 'application/vnd.jupyter.widget-view+json',
-  'application/vnd.plotly.v1+json' */
+  'application/vnd.jupyter.widget-view+json'
+  /* 'application/vnd.plotly.v1+json' */
 ]);
 
 export class AppletWidgetRegistry implements IAppletWidgetRegistry {
