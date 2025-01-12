@@ -10,7 +10,7 @@ import { ISessionContext } from '@jupyterlab/apputils';
 import { IDocumentWidget } from '@jupyterlab/docregistry';
 import { INotebookShell } from '@jupyter-notebook/application';
 import { NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
-import { PartialJSONObject, Token } from '@lumino/coreutils';
+import { JSONObject, PartialJSONObject, Token } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Panel } from '@lumino/widgets';
 
@@ -63,11 +63,27 @@ export interface IFailsAppletSize {
   height: number;
 }
 
+export interface IAppletWidgetRegistry {}
+
+export interface IFailsInterceptorUpdateMessage {
+  path: string;
+  mime: string;
+  state: JSONObject;
+}
+
 export interface IFailsLauncherInfo extends IFailsLauncherInit {
   inLectureChanged: ISignal<IFailsLauncherInfo, boolean>;
   selectedAppidChanged: ISignal<this, string | undefined>;
   appletSizes: { [key: string]: IFailsAppletSize };
   appletSizesChanged: ISignal<this, { [key: string]: IFailsAppletSize }>;
+  updateMessageArrived?: ISignal<
+    IAppletWidgetRegistry,
+    IFailsInterceptorUpdateMessage
+  >;
+  remoteUpdateMessageArrived: ISignal<
+    IFailsLauncherInfo,
+    IFailsInterceptorUpdateMessage
+  >;
 }
 
 export interface ILoadJupyterInfo {
@@ -99,6 +115,18 @@ export interface IActivateApp {
 export interface IScreenshotApp {
   type: 'screenshotApp';
   dpi: number;
+}
+
+export interface IActivateInterceptor {
+  type: 'activateInterceptor';
+  activate: boolean;
+}
+
+export interface IReceiveInterceptorUpdate {
+  type: 'receiveInterceptorUpdate';
+  path: string;
+  mime: string;
+  state: JSONObject;
 }
 
 let screenShotPatchInstalled = false;
@@ -183,10 +211,42 @@ class FailsLauncherInfo implements IFailsLauncherInfo {
     return this._appletSizesChanged;
   }
 
+  get updateMessageArrived():
+    | ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage>
+    | undefined {
+    return this._updateMessageArrived;
+  }
+
+  set updateMessageArrived(
+    updateMessageArrived:
+      | ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage>
+      | undefined
+  ) {
+    this._updateMessageArrived = updateMessageArrived;
+  }
+
+  get remoteUpdateMessageArrived(): ISignal<
+    IFailsLauncherInfo,
+    IFailsInterceptorUpdateMessage
+  > {
+    return this._remoteUpdateMessageArrived;
+  }
+
+  receiveRemoteUpdateMessage(message: IFailsInterceptorUpdateMessage) {
+    this._remoteUpdateMessageArrived.emit(message);
+  }
+
   private _inLecture: boolean;
   private _inLectureChanged = new Signal<this, boolean>(this);
   private _selectedAppid: string | undefined;
   private _selectedAppidChanged = new Signal<this, string | undefined>(this);
+  private _updateMessageArrived:
+    | ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage>
+    | undefined;
+  private _remoteUpdateMessageArrived: Signal<
+    IFailsLauncherInfo,
+    IFailsInterceptorUpdateMessage
+  > = new Signal<this, IFailsInterceptorUpdateMessage>(this);
   private _appletSizes: { [key: string]: IFailsAppletSize } = {};
   private _appletSizesChanged = new Signal<
     this,
@@ -280,6 +340,17 @@ function activateFailsLauncher(
       });
     }
   );
+  let interceptorActivated = false;
+  const sendInterceptorUpdate = (
+    sender: IAppletWidgetRegistry,
+    message: IFailsInterceptorUpdateMessage
+  ): void => {
+    _failsCallbacks.postMessageToFails!({
+      task: 'sendInterceptorUpdate',
+      ...message
+    });
+  };
+
   window.addEventListener('message', (event: MessageEvent<any>) => {
     // TODO identify the embedding page.
     if (typeof senderOrigin === 'undefined') {
@@ -417,6 +488,10 @@ function activateFailsLauncher(
           } else {
             failsLauncherInfo.inLecture = false;
           }
+          _failsCallbacks.postMessageToFails!({
+            requestId: event.data.requestId,
+            task: 'activateApp'
+          });
         }
         break;
       case 'screenshotApp':
@@ -463,6 +538,44 @@ function activateFailsLauncher(
                 error: error.toString()
               });
             });
+        }
+        break;
+      case 'activateInterceptor':
+        {
+          const activateInterceptor = event.data as IActivateInterceptor;
+          if (
+            interceptorActivated !== activateInterceptor.activate &&
+            failsLauncherInfo.updateMessageArrived
+          ) {
+            if (!interceptorActivated) {
+              failsLauncherInfo.updateMessageArrived.connect(
+                sendInterceptorUpdate
+              );
+              interceptorActivated = true;
+            } else {
+              failsLauncherInfo.updateMessageArrived.disconnect(
+                sendInterceptorUpdate
+              );
+              interceptorActivated = false;
+            }
+          }
+          _failsCallbacks.postMessageToFails!({
+            requestId: event.data.requestId,
+            task: 'activateInterceptor'
+          });
+        }
+        break;
+      case 'receiveInterceptorUpdate':
+        {
+          const receiveInterceptorUpdate =
+            event.data as IReceiveInterceptorUpdate;
+          const { path, mime, state } = receiveInterceptorUpdate;
+          const launcherInfo = failsLauncherInfo as FailsLauncherInfo;
+          launcherInfo.receiveRemoteUpdateMessage({ path, mime, state });
+          _failsCallbacks.postMessageToFails!({
+            requestId: event.data.requestId,
+            task: 'receiveInterceptorUpdate'
+          });
         }
         break;
       case 'restartKernelAndRerunCells':

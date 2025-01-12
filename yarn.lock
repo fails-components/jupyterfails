@@ -1626,6 +1626,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-applet-view@workspace:packages/applet-view"
   dependencies:
+    "@fails-components/jupyter-interceptor": "workspace:^"
     "@fails-components/jupyter-launcher": "workspace:^"
     "@jupyter-notebook/application": ^7.2.0
     "@jupyter-widgets/jupyterlab-manager": ^5.0.13
@@ -1722,10 +1723,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fails-components/jupyter-interceptor@workspace:packages/interceptor":
+"@fails-components/jupyter-interceptor@workspace:^, @fails-components/jupyter-interceptor@workspace:packages/interceptor":
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-interceptor@workspace:packages/interceptor"
   dependencies:
+    "@fails-components/jupyter-launcher": "workspace:^"
     "@jupyter-widgets/base": ^6.0.8
     "@jupyter-widgets/jupyterlab-manager": ^5.0.11
     "@jupyter/ydoc": ^3.0.0

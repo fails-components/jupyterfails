@@ -21,7 +21,13 @@ import {
 import { ICellModel } from '@jupyterlab/cells';
 import { ISharedCodeCell } from '@jupyter/ydoc';
 import { JSONObject, PromiseDelegate, Token } from '@lumino/coreutils';
-import { Kernel } from '@jupyterlab/services';
+import { Kernel /*, KernelMessage */ } from '@jupyterlab/services';
+import {
+  IFailsInterceptorUpdateMessage,
+  IAppletWidgetRegistry,
+  IFailsLauncherInfo
+} from '@fails-components/jupyter-launcher';
+import { Signal } from '@lumino/signaling';
 
 export interface IFailsInterceptor {
   isMimeTypeSupported: (mimeType: string) => boolean;
@@ -54,10 +60,14 @@ const dynamicMimeTypes = new Set<string>([
   'application/vnd.plotly.v1+json' */
 ]);
 
-export class AppletWidgetRegistry {
-  registerModel(path: string, modelId: string) {
+export class AppletWidgetRegistry implements IAppletWidgetRegistry {
+  constructor(launcher: IFailsLauncherInfo) {
+    launcher.updateMessageArrived = this._updateMessageArrived;
+  }
+  registerModel(path: string, modelId: string, model: WidgetModel) {
     this._modelIdToPath[modelId] = path;
     this._pathToModelId[path] = modelId;
+    this._pathToModel[path] = model;
   }
 
   unregisterPath(path: string) {
@@ -66,6 +76,7 @@ export class AppletWidgetRegistry {
       delete this._modelIdToPath[modelId];
     }
     delete this._pathToModelId[path];
+    delete this._pathToModel[path];
   }
 
   unregisterModel(modelId: string) {
@@ -73,32 +84,47 @@ export class AppletWidgetRegistry {
     delete this._modelIdToPath[modelId];
     if (path) {
       delete this._pathToModelId[path];
+      delete this._pathToModel[path];
     }
   }
 
-  getModel(path: string) {
+  getModelId(path: string) {
     return this._pathToModelId[path];
+  }
+
+  getModel(path: string) {
+    return this._pathToModel[path];
   }
 
   getPath(modelId: string) {
     return this._modelIdToPath[modelId];
   }
 
-  dispatchMessage(path: string, mime: string, message: any) {
-    console.log(path, mime, message);
+  dispatchMessage(message: IFailsInterceptorUpdateMessage) {
+    this._updateMessageArrived.emit(message);
+    // console.log(path, mime, message);
   }
 
   private _modelIdToPath: { [key: string]: string } = {};
   private _pathToModelId: { [key: string]: string } = {};
+  private _pathToModel: { [key: string]: WidgetModel } = {};
+  private _updateMessageArrived = new Signal<
+    IAppletWidgetRegistry,
+    IFailsInterceptorUpdateMessage
+  >(this);
 }
 
 function activateWidgetInterceptor(
   app: JupyterFrontEnd,
   notebookTracker: INotebookTracker,
-  rendermimeRegistry: IRenderMimeRegistry
+  rendermimeRegistry: IRenderMimeRegistry,
+  launcher: IFailsLauncherInfo
 ): IFailsInterceptor {
+  const wRegistry = new AppletWidgetRegistry(launcher);
   if (app.namespace === 'JupyterLite Server') {
-    return { isMimeTypeSupported: (mimeType: string) => false };
+    return {
+      isMimeTypeSupported: (mimeType: string) => false
+    };
   }
   const addKernelInterceptor = (kernel: Kernel.IKernelConnection) => {
     console.log('Install Kernel interceptor', kernel);
@@ -123,30 +149,51 @@ function activateWidgetInterceptor(
             // got an update
             const path = wRegistry.getPath(commId);
             console.log('Send an update', data.state, commId, path);
-            // value, index, button click seems to have an empty message only with outputs
-            const {
-              value = undefined,
-              index = undefined,
-              event = undefined
-            } = data.state as { value?: any; index?: any; event?: any };
-            if (path) {
-              const inform = { path, commId, value, index, event };
-              wRegistry.dispatchMessage(path, widgetsMime, inform);
-              // console.log('Inform message', inform, path);
-              // TODO store and send message!
+            if (path && typeof data.state === 'object') {
+              // const inform = { path, commId, value, index, event };
+              const state = { ...data.state } as JSONObject;
+              if (state.outputs) {
+                delete state.outputs;
+              }
+              if (Object.keys(state).length !== 0) {
+                wRegistry.dispatchMessage({
+                  path,
+                  mime: widgetsMime,
+                  state
+                });
+              }
             }
           }
         }
         // now fish all messages of control out
       }
     });
+    launcher.remoteUpdateMessageArrived.connect(
+      async (
+        slot: IFailsLauncherInfo,
+        args: IFailsInterceptorUpdateMessage
+      ) => {
+        // const modelId = wRegistry.getModelId(args.path);
+        const model = wRegistry.getModel(args.path);
+        const state = await (
+          model.constructor as typeof WidgetModel
+        )._deserialize_state(args.state, model.widget_manager);
+        // console.log('got an remote interceptor message', args, state);
+
+        for (const [key, value] of Object.entries(state)) {
+          model.set(key, value);
+        }
+        model.sync('patch', model, { attrs: state });
+      }
+    );
   };
 
-  const wRegistry = new AppletWidgetRegistry();
   const widgetsMime = 'application/vnd.jupyter.widget-view+json';
 
   // add interceptors for mimerenderers, whose javascript, we need to patch
-  if (rendermimeRegistry) {
+  // deactivated, as one can use always widgets!
+  // eslint-disable-next-line no-constant-condition
+  if (rendermimeRegistry && false) {
     const rmRegistry = rendermimeRegistry as RenderMimeRegistry;
     const mimetypes = ['application/vnd.plotly.v1+json']; // mimetypes to patch
 
@@ -190,12 +237,19 @@ function activateWidgetInterceptor(
               (<any>renderer.node).on('plotly_' + mess, (data: any) => {
                 const path = model.metadata?.appPath as string;
                 if (path) {
-                  wRegistry.dispatchMessage(path, mime, {
-                    message: mess,
-                    data
+                  wRegistry.dispatchMessage({
+                    path: path + ':' + mess,
+                    mime,
+                    state: data
                   });
                 }
-                //console.log('plotly', mess, data, model.metadata?.appPath);
+                console.log(
+                  'plotly',
+                  mess,
+                  data,
+                  model.metadata?.appPath,
+                  path
+                );
               });
             });
           }
@@ -311,11 +365,12 @@ function activateWidgetInterceptor(
                 });
               }
               // console.log('show widget model', path, widget.get_state());
-              wRegistry.registerModel(mypath, widget.model_id);
+              wRegistry.registerModel(mypath, widget.model_id, widget);
               console.log(
                 'model registred',
                 mypath,
-                widget.model_id /*, state, widget*/
+                widget.model_id /*, state*/,
+                widget
               );
             } else {
               console.log('model missing', widget_model_id);
@@ -380,7 +435,13 @@ function activateWidgetInterceptor(
                             };
                             iterateWidgets(appPath, model_id);
                           }
-                          if (mimebundle['application/vnd.plotly.v1+json']) {
+
+                          // Deactivate, as we are not using it, use a plotly widget instead.
+                          if (
+                            // eslint-disable-next-line no-constant-condition
+                            mimebundle['application/vnd.plotly.v1+json'] &&
+                            false
+                          ) {
                             const bundle =
                               mimebundle['application/vnd.plotly.v1+json'];
                             console.log('Plotly bundle', bundle);
@@ -445,7 +506,7 @@ const appletWidgetInterceptor: JupyterFrontEndPlugin<IFailsInterceptor> = {
   autoStart: true,
   activate: activateWidgetInterceptor,
   provides: IFailsInterceptor,
-  requires: [INotebookTracker, IRenderMimeRegistry],
+  requires: [INotebookTracker, IRenderMimeRegistry, IFailsLauncherInfo],
   optional: []
 };
 
