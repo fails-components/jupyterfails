@@ -2,8 +2,9 @@
 
 [![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
 
-This is an extension, that intercepts message's to and from output views, in order to puppet external jupyter deployments of clients listening to a central instructor.
-It is probably only useful within fails-components' jupyter lite installation.
+This is an extension, that intercepts message's to and from output views and its widgets, in order to puppet external jupyter deployments of clients listening to a central instructor.
+It can be used together with the fails_components_jupyter_launcher.
+Currently, only widgets based on ipywidgets are supported.
 
 ## Requirements
 

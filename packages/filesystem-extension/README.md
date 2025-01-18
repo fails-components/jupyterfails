@@ -3,7 +3,8 @@
 [![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
 
 This is an extension, that taps into jupyter lite's filesystem handling to be able to remotely control and supply the files visible to jupyter lite.
-It is probably only useful within fails-components' jupyter lite installation.
+It is probably only useful together with fails-components' jupyter launcher plugin,
+that allows to control jupyter lite embedded inside an iframe (build from the jupyterfails' repos configs).
 
 ## Requirements
 

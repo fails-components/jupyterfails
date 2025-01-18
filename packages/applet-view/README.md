@@ -2,7 +2,9 @@
 
 [![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
 
-An extension, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. 
+An extension, that let's you select cell for an applet.
+The applets are show in a splitted notebook window. 
+The view can be switched programmatically to an applet mode, where only the selected cells are visible. This is used in fails-components to have jupyter applets in an interactive teaching environment. 
 
 ## Requirements
 
