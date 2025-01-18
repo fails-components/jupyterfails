@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-outputsarea-remote",
-    "version": "0.1.0",
+    "version": "0.0.1",
     "description": "A collection of class, that let's you redirect the outputarea's output to another outputarea over a messagechannel. ",
     "keywords": [
         "jupyter",

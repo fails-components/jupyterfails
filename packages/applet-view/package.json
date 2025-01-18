@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-applet-view",
-    "version": "0.1.0",
+    "version": "0.0.1",
     "description": "A collection of extensions, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. ",
     "keywords": [
         "jupyter",

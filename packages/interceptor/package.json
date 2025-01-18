@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-interceptor",
-    "version": "0.1.0",
+    "version": "0.0.1",
     "description": "A collections of plugins intercepting kernel messages and other message, to steer outputs remotely",
     "keywords": [
         "jupyter",
