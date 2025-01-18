@@ -144,33 +144,27 @@ export class AppletViewOutputArea extends AccordionPanel {
   }
 
   cloneCell(cell: Cell, cellid: string): Widget {
-    const interceptorSupportedMime = this._interceptor?.isMimeTypeSupported?.(
-      cell.model.mimeType
-    )
-      ? true
-      : false;
     if (cell.model.type === 'code') {
       const codeCell = cell as CodeCell;
       const clone = codeCell.cloneOutputArea();
-      if (this._interceptor && !interceptorSupportedMime) {
-        clone.addClass('fl-jl-cell-interceptor-unsupported');
+      if (this._interceptor) {
+        let unsupported = false;
+        const outputs = codeCell.model.outputs;
+        for (let i = 0; i < outputs.length; i++) {
+          const outputModel = outputs.get(i);
+          const keys = Object.keys(outputModel.data);
+          if (keys.some(key => !this._interceptor?.isMimeTypeSupported(key))) {
+            unsupported = true;
+            break;
+          }
+        }
+        if (unsupported) {
+          clone.addClass('fl-jl-cell-interceptor-unsupported');
+        } else {
+          clone.removeClass('fl-jl-cell-interceptor-unsupported');
+        }
       }
-      // code for remote model
-      /*
-        const channel = new MessageChannel();
-        new OutputAreaModelRemoteSender({
-          port: channel.port1,
-          model: codeCell.model.outputs!
-        });
-        // console.log('debug simplified');
-        const clone = new SimplifiedOutputArea({
-          // model: codeCell.model.outputs!,
-          model: new OutputAreaModelRemote({
-            port: channel.port2
-          }),
-          contentFactory: codeCell.contentFactory,
-          rendermime: codeCell['_rendermime']
-        });*/
+
       // @ts-expect-error cellid does not exist on type
       clone.cellid = cellid;
       // @ts-expect-error cellid does not exist on type
@@ -178,9 +172,6 @@ export class AppletViewOutputArea extends AccordionPanel {
       return clone;
     } else {
       const clone = cell.clone();
-      if (this._interceptor && !interceptorSupportedMime) {
-        clone.addClass('fl-jl-cell-interceptor-unsupported');
-      }
       // @ts-expect-error cellid does not exist on type
       clone.cellid = cellid;
       // @ts-expect-error cellid does not exist on type

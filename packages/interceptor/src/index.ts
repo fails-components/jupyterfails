@@ -41,6 +41,7 @@ export const IFailsInterceptor = new Token<IFailsInterceptor>(
 // List of static Mimetypes, where intercepting is not necessary
 const staticMimeTypes = new Set([
   'text/html',
+  'text/plain',
   'image/bmp',
   'image/png',
   'image/jpeg',
