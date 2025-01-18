@@ -51,7 +51,7 @@
       "@jupyter-notebook/application-extension:zen"
     ],
     "enableMemoryStorage": true,
-    "settingsStorageName": "failsJupyterDev",
+    "settingsStorageName": "failsJupyter",
     "settingsStorageDrivers": ["memoryStorageDriver"],
     "contentsStorageDrivers": ["memoryStorageDriver"]
   }
