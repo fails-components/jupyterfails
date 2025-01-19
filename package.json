@@ -1,6 +1,6 @@
 {
-    "name": "@fails-components/jupyter-root",
-    "version": "0.1.0",
+    "name": "@fails-components/jupyter-monorepo",
+    "version": "0.0.1",
     "private": true,
     "homepage": "",
     "bugs": {

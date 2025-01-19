@@ -13,7 +13,21 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        include:
+          - node: "@fails-components/jupyter-applet-view"
+            python: "fails_components_jupyter_applet_view"
+            shortname: "applet-view"
+          - node: "@fails-components/jupyter-filesystem-extension"
+            python: "fails_components_jupyter_filesystem_extension"
+            shortname: "filesystem-extension"
+          - node: "@fails-components/jupyter-interceptor"
+            python: "fails_components_jupyter_interceptor"
+            shortname: "interceptor"
+          - node: "@fails-components/jupyter-launcher"
+            python: "fails_components_jupyter_launcher"
+            shortname: "launcher"
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -24,44 +38,63 @@ jobs:
     - name: Install dependencies
       run: python -m pip install -U "jupyterlab>=4.0.0,<5"
 
-    - name: Lint the extension
+    - name: Lint the extensions
       run: |
         set -eux
+        cd packages/${{ matrix.shortname }}/
         jlpm
         jlpm run lint:check
 
-    - name: Test the extension
+    - name: Test the extensions
       run: |
         set -eux
+        cd packages/${{ matrix.shortname }}/
         jlpm run test
 
     - name: Build the extension
       run: |
         set -eux
+        cd packages/${{ matrix.shortname }}/
         python -m pip install .[test]
 
         jupyter labextension list
-        jupyter labextension list 2>&1 | grep -ie "@fails-components/jupyter-applet-view.*OK"
+        jupyter labextension list 2>&1 | grep -ie "${{ matrix.node }}.*OK"
         python -m jupyterlab.browser_check
 
     - name: Package the extension
       run: |
         set -eux
+        cd packages/${{ matrix.shortname }}/
 
         pip install build
         python -m build
-        pip uninstall -y "fails_components_jupyter_applet_view" jupyterlab
+        pip uninstall -y "${{ matrix.python }}" jupyterlab
 
     - name: Upload extension packages
       uses: actions/upload-artifact@v4
       with:
-        name: extension-artifacts
-        path: dist/fails_components_jupyter_applet_view*
+        name: extension-artifacts-${{ matrix.shortname }}
+        path: packages/${{ matrix.shortname }}/${{ matrix.python }}*
         if-no-files-found: error
 
   test_isolated:
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - node: "@fails-components/jupyter-applet-view"
+            python: "fails_components_jupyter_applet_view"
+            shortname: "applet-view"
+          - node: "@fails-components/jupyter-filesystem-extension"
+            python: "fails_components_jupyter_filesystem_extension"
+            shortname: "filesystem-extension"
+          - node: "@fails-components/jupyter-interceptor"
+            python: "fails_components_jupyter_interceptor"
+            shortname: "interceptor"
+          - node: "@fails-components/jupyter-launcher"
+            python: "fails_components_jupyter_launcher"
+            shortname: "launcher"
 
     steps:
     - name: Install Python
@@ -71,25 +104,41 @@ jobs:
         architecture: 'x64'
     - uses: actions/download-artifact@v4
       with:
-        name: extension-artifacts
+        name: extension-artifacts-${{ matrix.shortname }}
     - name: Install and Test
       run: |
         set -eux
         # Remove NodeJS, twice to take care of system and locally installed node versions.
         sudo rm -rf $(which node)
         sudo rm -rf $(which node)
+        cd packages/${{ matrix.shortname }}/
 
-        pip install "jupyterlab>=4.0.0,<5" fails_components_jupyter_applet_view*.whl
+        pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
 
         jupyter labextension list
-        jupyter labextension list 2>&1 | grep -ie "@fails-components/jupyter-applet-view.*OK"
+        jupyter labextension list 2>&1 | grep -ie "${{ matrix.node }}.*OK"
         python -m jupyterlab.browser_check --no-browser-test
 
   integration-tests:
     name: Integration tests
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - node: "@fails-components/jupyter-applet-view"
+            python: "fails_components_jupyter_applet_view"
+            shortname: "applet-view"
+          - node: "@fails-components/jupyter-filesystem-extension"
+            python: "fails_components_jupyter_filesystem_extension"
+            shortname: "filesystem-extension"
+          - node: "@fails-components/jupyter-interceptor"
+            python: "fails_components_jupyter_interceptor"
+            shortname: "interceptor"
+          - node: "@fails-components/jupyter-launcher"
+            python: "fails_components_jupyter_launcher"
+            shortname: "launcher"
 
     env:
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
@@ -104,12 +153,13 @@ jobs:
     - name: Download extension package
       uses: actions/download-artifact@v4
       with:
-        name: extension-artifacts
+        name: extension-artifacts-${{ matrix.shortname }}
 
     - name: Install the extension
       run: |
         set -eux
-        python -m pip install "jupyterlab>=4.0.0,<5" fails_components_jupyter_applet_view*.whl
+        cd packages/${{ matrix.shortname }}/
+        python -m pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
     - name: Install dependencies
       working-directory: ui-tests
@@ -138,7 +188,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: fails_components_jupyter_applet_view-playwright-tests
+        name: ${{ matrix.python }}-playwright-tests
         path: |
           ui-tests/test-results
           ui-tests/playwright-report
