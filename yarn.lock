@@ -1819,9 +1819,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fails-components/jupyter-root@workspace:.":
+"@fails-components/jupyter-monorepo@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@fails-components/jupyter-root@workspace:."
+  resolution: "@fails-components/jupyter-monorepo@workspace:."
   dependencies:
     "@jupyterlab/builder": ^4.0.0
     "@jupyterlab/testutils": ^4.0.0

@@ -9,7 +9,7 @@ RUN mkdir -p ~/miniconda3 &&wget https://repo.anaconda.com/miniconda/Miniconda3-
 
 #RUN pipx install copier
 
-RUN ~/miniconda3/bin/conda create -y -n jupyterlab-ext --override-channels --strict-channel-priority -c conda-forge -c nodefaults jupyterlab=4 nodejs=18 git copier=7 jinja2-time jupyterlite-core jupyterlite-pyodide-kernel jupyterlite-xeus
+RUN ~/miniconda3/bin/conda create -y -n failscomponents --override-channels --strict-channel-priority -c conda-forge -c nodefaults jupyterlab=4 nodejs=18 git copier=7 jinja2-time jupyterlite-core jupyterlite-pyodide-kernel jupyterlite-xeus
 
 
 
