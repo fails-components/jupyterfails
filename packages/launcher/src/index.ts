@@ -86,22 +86,22 @@ export interface IFailsLauncherInfo extends IFailsLauncherInit {
   >;
 }
 
+export interface IReplyJupyter {
+  requestId?: number;
+}
+
 export interface ILoadJupyterInfo {
   type: 'loadJupyter';
   inLecture: boolean;
   rerunAtStartup: boolean;
   installScreenShotPatches: boolean;
-  appid: string;
+  appid?: string;
   fileName: string;
   fileData: object | undefined; // TODO replace object with meaning full type
   kernelName: 'python' | 'xpython' | undefined;
 }
 
-export interface IReplyJupyter {
-  requestId: number;
-}
-
-export interface ISaveJupyter extends IReplyJupyter {
+export interface ISaveJupyter {
   type: 'saveJupyter';
   fileName: string;
 }
@@ -109,12 +109,11 @@ export interface ISaveJupyter extends IReplyJupyter {
 export interface IActivateApp {
   type: 'activateApp';
   inLecture: boolean;
-  appid: string;
+  appid?: string;
 }
 
-export interface IScreenshotApp {
+export interface IScreenshotApp extends IScreenShotOpts {
   type: 'screenshotApp';
-  dpi: number;
 }
 
 export interface IActivateInterceptor {
@@ -122,12 +121,72 @@ export interface IActivateInterceptor {
   activate: boolean;
 }
 
-export interface IReceiveInterceptorUpdate {
-  type: 'receiveInterceptorUpdate';
+export interface IGetLicenses {
+  type: 'getLicenses';
+}
+
+export interface IRestartKernelAndRerunCells {
+  type: 'restartKernelAndRerunCells';
+}
+
+export interface IInterceptorUpdate {
   path: string;
   mime: string;
   state: JSONObject;
 }
+
+export interface IReceiveInterceptorUpdate extends IInterceptorUpdate {
+  type: 'receiveInterceptorUpdate';
+}
+
+export type IFailsToJupyterMessage =
+  | IActivateApp
+  | IActivateInterceptor
+  | IGetLicenses
+  | IReceiveInterceptorUpdate
+  | IRestartKernelAndRerunCells
+  | ILoadJupyterInfo
+  | IScreenshotApp
+  | ISaveJupyter;
+
+export interface IAppLoaded {
+  task: 'appLoaded';
+}
+
+export interface IDocDirty {
+  task: 'docDirty';
+  dirty: boolean;
+}
+
+export interface IReportMetadata {
+  task: 'reportMetadata';
+  metadata: {
+    failsApp?: JSONObject;
+    kernelspec?: JSONObject;
+  };
+}
+
+export interface IReportFailsAppletSizes {
+  task: 'reportFailsAppletSizes';
+  appletSizes: { [key: string]: IFailsAppletSize };
+}
+
+export interface IReportKernelStatus {
+  task: 'reportKernelStatus';
+  status: string;
+}
+
+export interface ISendInterceptorUpdate extends IInterceptorUpdate {
+  task: 'sendInterceptorUpdate';
+}
+
+export type IJupyterToFailsMessage =
+  | IReportMetadata
+  | IReportFailsAppletSizes
+  | ISendInterceptorUpdate
+  | IReportKernelStatus
+  | IAppLoaded
+  | IDocDirty;
 
 let screenShotPatchInstalled = false;
 const installScreenShotPatches = () => {
