@@ -39,7 +39,6 @@ export function activateAppletView(
   failsLauncherInfo: IFailsLauncherInfo | null,
   failsInterceptor: IFailsInterceptor | null
 ): void {
-  console.log('ACTIVATE applet view');
   if (app.namespace === 'JupyterLite Server') {
     return;
   }
@@ -134,17 +133,13 @@ export function activateAppletView(
       });
       widget.context.saveState.connect((slot, savestate) => {
         if (savestate === 'started') {
-          console.log('Save data');
           const currentSplitView = widget as SplitViewNotebookPanel;
           const outputarea = currentSplitView.appletViewWidget;
           if (outputarea !== undefined) {
             const failsData = outputarea.saveData();
-            console.log('Save data2', failsData);
             if (failsData) {
-              console.log('context', widget.context);
               const model = widget.context.model;
               model.setMetadata('failsApp', failsData);
-              console.log('Save data3', model);
             }
           }
         }
@@ -221,7 +216,7 @@ export function activateAppletView(
       let current: NotebookPanel | undefined | null;
       let cell: Cell | undefined;
 
-      console.log('Add Output for path and index', path, index, args);
+      // console.log('Add Output for path and index', path, index, args);
       if (path && index !== undefined && index !== null) {
         current = docManager.findWidget(
           path,
@@ -239,7 +234,7 @@ export function activateAppletView(
         index = current.content.activeCellIndex;
       }
       // const pathid = current.context.path;
-      console.log('debug current cell index', current, cell, index);
+      // console.log('debug current cell index', current, cell, index);
       // TODO: Find area if it already exists, and add content
       const currentSplitView = current as SplitViewNotebookPanel;
       if (currentSplitView.appletViewWidget) {
@@ -335,7 +330,6 @@ export function activateAppletView(
   commands.addCommand(moveViewUpID, {
     label: /* trans.__(*/ 'Move view up' /*)*/,
     execute: async args => {
-      console.log('move view up!', args);
       moveWidgets(args, -1);
     },
     icon: args => (args.toolbar ? moveUpIcon : undefined),
@@ -345,7 +339,6 @@ export function activateAppletView(
   commands.addCommand(moveViewDownID, {
     label: /* trans.__(*/ 'Move view down' /*)*/,
     execute: async args => {
-      console.log('move view down!', args);
       moveWidgets(args, 1);
     },
     icon: args => (args.toolbar ? moveDownIcon : undefined),
@@ -355,7 +348,6 @@ export function activateAppletView(
   commands.addCommand(moveViewAppUpID, {
     label: /* trans.__(*/ 'Move view up to other app' /*)*/,
     execute: async args => {
-      console.log('move view app up!', args);
       moveWidgetsApp(args, -1);
     },
     icon: args => (args.toolbar ? caretUpIcon : undefined),
@@ -368,7 +360,6 @@ export function activateAppletView(
   commands.addCommand(moveViewAppDownID, {
     label: /* trans.__(*/ 'Move view down to other app' /*)*/,
     execute: async args => {
-      console.log('move view app down!', args);
       moveWidgetsApp(args, 1);
     },
     icon: args => (args.toolbar ? caretDownIcon : undefined),
@@ -382,7 +373,6 @@ export function activateAppletView(
   commands.addCommand(deleteViewID, {
     label: /* trans.__(*/ 'Delete view' /*)*/,
     execute: async args => {
-      console.log('delete view!', args);
       const current = getCurrentNotebook(args);
       if (!current) {
         return;

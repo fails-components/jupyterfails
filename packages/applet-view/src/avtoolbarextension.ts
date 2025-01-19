@@ -61,7 +61,6 @@ export class AppletViewToolbarExtension
   ) {
     this._commands = commands;
     this._launcherInfo = launcherInfo;
-    console.log('peek toolbar factory', toolbarFactory);
     // # TODO we have to make sure, we get the default, how can we do this?
     this._toolbarFactory = toolbarFactory ?? this.defaultToolbarFactory;
   }
@@ -70,7 +69,6 @@ export class AppletViewToolbarExtension
     widget: Widget
   ) => IObservableList<ToolbarRegistry.IToolbarItem> {
     const itemFactory = createDefaultFactory(this._commands);
-    console.log('default toolbar fetch!');
     return (widget: Widget) =>
       new ObservableList({
         values: defaultToolbarItems.map(item => {
@@ -100,7 +98,6 @@ export class AppletViewToolbarExtension
   }
 
   createNew(panel: SplitViewNotebookPanel): IDisposable {
-    console.log('createNew', panel);
     return new AppletViewToolbarTracker(
       panel,
       this._toolbarFactory,
@@ -128,7 +125,6 @@ export class AppletViewToolbarTracker implements IDisposable {
     ) => IObservableList<ToolbarRegistry.IToolbarItem>,
     launcherInfo: IFailsLauncherInfo | null
   ) {
-    console.log('Tracker area', notebookpanel);
     this._notebookpanel = notebookpanel;
     this._toolbarFactory = toolbarFactory ?? null;
 
@@ -139,7 +135,6 @@ export class AppletViewToolbarTracker implements IDisposable {
           this._addToolbar,
           this
         );
-        console.log('first add toolbar');
         this._addToolbar();
         if (launcherInfo?.inLecture) {
           this._setHiddenToolbars(launcherInfo?.inLecture);
@@ -155,7 +150,6 @@ export class AppletViewToolbarTracker implements IDisposable {
             }
           );
         }
-        console.log('first add toolbar end');
       });
     });
   }
@@ -183,7 +177,6 @@ export class AppletViewToolbarTracker implements IDisposable {
     const notebookpanel = this._notebookpanel;
 
     if (notebookpanel && !notebookpanel.isDisposed) {
-      console.log('really addToolbar');
       const promises: Promise<void>[] = [
         /*notebookpanel.ready*/
       ]; // remove area ready
@@ -192,7 +185,6 @@ export class AppletViewToolbarTracker implements IDisposable {
       const doAddToolbar = (part: IViewPart) => {
         const clone = part.clone;
         if (clone) {
-          console.log('parts mark 1');
           // eslint-disable-next-line no-constant-condition
           const toolbarWidget = new Toolbar();
           this._toolbars.set(part, toolbarWidget);
@@ -200,7 +192,6 @@ export class AppletViewToolbarTracker implements IDisposable {
           // Note: CELL_MENU_CLASS is deprecated.
           toolbarWidget.addClass('fl-jp-AppletViewToolbar'); // implement MR
           if (this._toolbarFactory) {
-            console.log('before settoolbar');
             // ts-expect-error Widget has no toolbar
             // clone.toolbar = toolbarWidget;
             setToolbar(clone, this._toolbarFactory, toolbarWidget);
@@ -211,7 +202,6 @@ export class AppletViewToolbarTracker implements IDisposable {
       for (const applet of applets) {
         for (const part of applet.parts) {
           const clone = part.clone;
-          console.log('parts clone', clone, part);
           if (!this._toolbars.has(part)) {
             if (clone) {
               // eslint-disable-next-line no-constant-condition
@@ -219,7 +209,6 @@ export class AppletViewToolbarTracker implements IDisposable {
             } else {
               // we have to defer it
               const slot = () => {
-                console.log('slot clone called');
                 doAddToolbar(part);
                 part.cloned.disconnect(slot);
               };
@@ -246,7 +235,6 @@ export class AppletViewToolbarTracker implements IDisposable {
               }
               const clone = part.clone;
               if (clone) {
-                console.log('PanelLayout?', clone!.layout);
                 // (clone!.layout as PanelLayout).insertWidget(0, toolbarWidget);
                 (clone!.layout as PanelLayout).addWidget(toolbarWidget);
               }

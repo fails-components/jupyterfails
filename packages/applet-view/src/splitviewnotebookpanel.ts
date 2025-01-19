@@ -149,7 +149,6 @@ export class SplitViewNotebookWidgetFactory extends NotebookWidgetFactory {
     context: DocumentRegistry.IContext<INotebookModel>,
     source?: NotebookPanel
   ): SplitViewNotebookPanel {
-    console.log('Create new Widget intercepted');
     // copied from basis object
     const translator = (context as any).translator;
     const kernelHistory = new NotebookHistory({

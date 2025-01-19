@@ -27,7 +27,6 @@ const appletViewToolbar: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   activate: async (app: JupyterFrontEnd, launcherInfo: IFailsLauncherInfo) => {
     const toolbarItems = undefined;
-    console.log('app commands', app.commands);
     app.docRegistry.addWidgetExtension(
       'Notebook',
       new AppletViewToolbarExtension(app.commands, launcherInfo, toolbarItems)

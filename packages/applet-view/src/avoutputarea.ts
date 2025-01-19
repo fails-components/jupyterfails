@@ -84,7 +84,6 @@ export class AppletViewOutputArea extends AccordionPanel {
     void this._notebook.context.ready.then(() => {
       this._applets.forEach(({ parts, appid }) => {
         // TODO: Count applets
-        console.log('parts loop before');
         parts.forEach((part, index) => {
           if (
             !part.cell &&
@@ -95,14 +94,12 @@ export class AppletViewOutputArea extends AccordionPanel {
               part.index
             ] as Cell;
             part.cell = currentcell;
-            console.log('Inspect part cell');
             const codeCell = part.cell as CodeCell;
             const outputAreaModel: IOutputAreaModel = codeCell.outputArea.model;
             for (let i = 0; i < outputAreaModel.length; i++) {
               const cur = outputAreaModel.get(i);
-              console.log('Output model:', i, cur);
               cur.changed.connect(() => {
-                console.log('Model changed', i, cur, outputAreaModel.get(i));
+                // console.log('Model changed', i, cur, outputAreaModel.get(i));
               });
             }
           }
@@ -311,7 +308,6 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
 */
   moveApp(appid: string, cellid: string, delta: number) {
-    console.log('move app debug');
     const appIndex = this._applets.findIndex(applet => applet.appid === appid);
     if (appIndex === -1) {
       return;
@@ -400,7 +396,6 @@ export class AppletViewOutputArea extends AccordionPanel {
     if (!data) {
       return;
     }
-    console.log('load data ready', data);
     let applets = data.applets as AppletViewOutputArea.IApplet[];
     if (data.parts && typeof applets === 'undefined') {
       applets = [{ appid: UUID.uuid4(), parts: data.parts }];
@@ -437,7 +432,6 @@ export class AppletViewOutputArea extends AccordionPanel {
       }
 
       for (const part of applet.parts) {
-        console.log('loaddata', part);
         if (typeof part.index !== 'undefined' || part.id) {
           this.addPart(appid, {
             index: part.index,
@@ -501,7 +495,6 @@ export class AppletViewOutputArea extends AccordionPanel {
     const appid = this._applets[appletIndex].appid;
 
     const applet = this._applets[appletIndex];
-    console.log('applet parts', applet);
     // we need to figure out, if it is already added
     if (
       applet.parts.some(
@@ -555,15 +548,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       const apps = this._applets[appIndex];
       const ind = apps.parts.indexOf(topush);
       if (ind !== -1) {
-        console.log(
-          'addpart gone  part 0',
-          applet.parts.map(el => el.id).join(',')
-        );
         apps.parts.splice(ind, 1);
-        console.log(
-          'addpart gone  part 1',
-          applet.parts.map(el => el.id).join(',')
-        );
       }
       topush.clone?.dispose();
     });
@@ -870,18 +855,17 @@ export class AppletViewOutputAreaPart
   }
 
   set cell(value: Cell | undefined) {
-    console.log('debug cell assign', value?.model.id, this._id);
     if (value?.model.id !== this._id) {
       // throw new Error('Can not assign a cell with different id');
-      console.log(
+     /*  console.log(
         'ASSIGNING CELL with different id',
         value?.model.id,
         this._id
-      );
+      ); */
     }
-    if (this._cell?.model.id !== value?.model.id) {
+    /* if (this._cell?.model.id !== value?.model.id) {
       console.log('ASSIGNING CELL id change', value?.model.id, this._id);
-    }
+    } */
     this._cell = value;
   }
 
@@ -895,7 +879,6 @@ export class AppletViewOutputAreaPart
 
   set clone(value: Widget | undefined) {
     this._clone = value;
-    console.log('clone emit');
     this._cloned.emit(); // inform that we have been cloned
   }
 
@@ -931,7 +914,6 @@ export class AppletViewRenderer extends AccordionPanel.Renderer {
 
     const collapser = handle.appendChild(this.createCollapseIcon(data));
     collapser.className = 'lm-AccordionPanel-titleCollapser';
-    console.log('createSectiontitle');
 
     let title = data.caption || data.label;
 

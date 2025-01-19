@@ -16,7 +16,6 @@ export const failsContentsPlugin: JupyterLiteServerPlugin<IContents> = {
     if (app.namespace !== 'JupyterLite Server') {
       console.log('Not on server');
     }
-    console.log('FAILS IContents');
     const contents = new FailsContents();
     app.started.then(() => contents.initialize().catch(console.warn));
     return contents;
@@ -32,7 +31,6 @@ const failsSettingsPlugin: JupyterLiteServerPlugin<ISettings> = {
     if (app.namespace !== 'JupyterLite Server') {
       console.log('Not on server');
     }
-    console.log('FAILS ISettings');
     const settings = new FailsSettings();
     app.started.then(() => settings.initialize().catch(console.warn));
     return settings;

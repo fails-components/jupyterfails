@@ -128,14 +128,13 @@ function activateWidgetInterceptor(
     };
   }
   const addKernelInterceptor = (kernel: Kernel.IKernelConnection) => {
-    console.log('Install Kernel interceptor', kernel);
     kernel.anyMessage.connect((sender, args) => {
-      console.log(
+    /*  console.log(
         'Intercept any message',
         args,
         args?.msg?.header?.msg_id,
         args?.msg?.header?.msg_type
-      );
+      ); */
       const { direction, msg } = args;
       if (direction === 'send') {
         // send from the control
@@ -149,7 +148,7 @@ function activateWidgetInterceptor(
           if (data?.method === 'update') {
             // got an update
             const path = wRegistry.getPath(commId);
-            console.log('Send an update', data.state, commId, path);
+            // console.log('Send an update', data.state, commId, path);
             if (path && typeof data.state === 'object') {
               // const inform = { path, commId, value, index, event };
               const state = { ...data.state } as JSONObject;
@@ -304,7 +303,6 @@ function activateWidgetInterceptor(
               // ensure it is handled after the widgetmanager is installed.
               const rendermime = panel.content.rendermime;
               const widgetFactory = rendermime.getFactory(widgetsMime);
-              console.log('before my dummy', widgetFactory, rendermime);
               if (widgetFactory) {
                 // now create a dummy widget
                 const dummyWidget = widgetFactory.createRenderer({
@@ -319,12 +317,6 @@ function activateWidgetInterceptor(
                   latexTypesetter: null,
                   linkHandler: null
                 });
-                console.log(
-                  'widgetmanager',
-                  (dummyWidget as unknown as { _manager: IWidgetManager })
-                    ._manager,
-                  dummyWidget
-                );
                 resolve(
                   await (
                     dummyWidget as unknown as {
@@ -367,14 +359,14 @@ function activateWidgetInterceptor(
               }
               // console.log('show widget model', path, widget.get_state());
               wRegistry.registerModel(mypath, widget.model_id, widget);
-              console.log(
+              /* console.log(
                 'model registred',
                 mypath,
-                widget.model_id /*, state*/,
+                widget.model_id /*, state*,
                 widget
-              );
+              ); */
             } else {
-              console.log('model missing', widget_model_id);
+              // console.log('model missing', widget_model_id);
               pendingModels.push({ path, widget_model_id });
             }
           };
@@ -426,9 +418,9 @@ function activateWidgetInterceptor(
                             | IDisplayUpdate
                             | IDisplayData;
 
-                          console.log('Mimebundle', result.data); // to do parse this also
-                          console.log('Metadata', result.metadata);
-                          console.log('Result', result);
+                          // console.log('Mimebundle', result.data); // to do parse this also
+                          // console.log('Metadata', result.metadata);
+                          // console.log('Result', result);
                           const mimebundle = result.data;
                           if (mimebundle[widgetsMime]) {
                             const { model_id } = mimebundle[widgetsMime] as {
@@ -462,7 +454,6 @@ function activateWidgetInterceptor(
                     if (addPath) {
                       // should happen only once
                       sharedModel.updateOutputs(index, index + 1, [output]);
-                      console.log('addpath');
                     }
                     index++;
                   }
