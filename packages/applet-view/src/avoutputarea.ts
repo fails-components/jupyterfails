@@ -857,7 +857,7 @@ export class AppletViewOutputAreaPart
   set cell(value: Cell | undefined) {
     if (value?.model.id !== this._id) {
       // throw new Error('Can not assign a cell with different id');
-     /*  console.log(
+      /*  console.log(
         'ASSIGNING CELL with different id',
         value?.model.id,
         this._id
