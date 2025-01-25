@@ -139,3 +139,17 @@ body[data-notebook='notebooks'] .jp-WindowedPanel-inner {
     font-weight: bold; 
     text-align: start;
 }
+
+.jp-OutputArea .widget-button:not(.fl-jl-notebook-inlecture *)::after {
+    content: "Unsupported!";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); 
+    color: red;
+    background-color: #fffc;
+    padding: 2px 4px; 
+    font-size: 1em;
+    font-weight: bold; 
+    text-align: start;
+}
