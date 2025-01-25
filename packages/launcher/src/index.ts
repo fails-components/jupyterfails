@@ -90,11 +90,18 @@ export interface IReplyJupyter {
   requestId?: number;
 }
 
+export interface IGDPRProxyInfo {
+  allowedSites?: string[] | undefined;
+  proxySites?: string[] | undefined;
+  proxyURL: string;
+}
+
 export interface ILoadJupyterInfo {
   type: 'loadJupyter';
   inLecture: boolean;
   rerunAtStartup: boolean;
   installScreenShotPatches: boolean;
+  installGDPRProxy?: IGDPRProxyInfo;
   appid?: string;
   fileName: string;
   fileData: object | undefined; // TODO replace object with meaning full type
@@ -211,6 +218,161 @@ const installScreenShotPatches = () => {
     return oldGetContext.apply(this, [contexttype, contextAttributes]);
   };
   screenShotPatchInstalled = true;
+};
+
+// Monkey patch fetch, e.g. for GDPR compliance
+let fetchPatchInstalled = false;
+const installFetchPatches = ({
+  allowedSites = undefined,
+  proxySites = undefined,
+  proxyURL
+}: IGDPRProxyInfo) => {
+  if (fetchPatchInstalled) {
+    return;
+  }
+  const allowedOrigins = [location.origin, ...(allowedSites || [])];
+  const allowedOriginsString = allowedOrigins
+    .map(el => "'" + new URL(el).origin + "'")
+    .join(',');
+  const proxySitesString = (proxySites || [])
+    .map(el => "'" + new URL(el).origin + "'")
+    .join(',');
+
+  // Monkey patch fetch
+  const oldFetch = globalThis.fetch;
+  globalThis.fetch = async (
+    url: RequestInfo | URL,
+    options: RequestInit = {}
+  ) => {
+    const urlObj =
+      url instanceof URL
+        ? url
+        : new URL(url instanceof Request ? url.url : url, location.href);
+    if (allowedOrigins.includes(urlObj.origin)) {
+      return oldFetch(url instanceof Request ? url : urlObj, options);
+    }
+    if (proxySites && proxySites.includes(urlObj.origin)) {
+      // rewrite the URL and response
+      const resURL = proxyURL + urlObj.hostname + urlObj.pathname;
+      if (url instanceof Request) {
+        const request = url;
+        const newRequest = new Request(resURL, {
+          method: request.method,
+          headers: request.headers,
+          body: request.body,
+          credentials: request.credentials,
+          mode: request.mode,
+          integrity: request.integrity,
+          keepalive: request.keepalive,
+          referrerPolicy: request.referrerPolicy,
+          cache: request.cache,
+          redirect: request.redirect,
+          referrer: request.referrer,
+          signal: request.signal
+        });
+        return oldFetch(newRequest, options);
+      } else {
+        urlObj.href = resURL;
+        return oldFetch(urlObj, options);
+      }
+    }
+    console.log('alien fetch URL:', urlObj.href);
+    return new Response('Blocked domain, access forbidden', {
+      status: 403,
+      statusText: 'Forbidden',
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  };
+  const oldWorker = Worker;
+  const NewWorker = function (
+    script: string | URL,
+    options?: WorkerOptions | undefined
+  ) {
+    const scriptURL =
+      script instanceof URL ? script : new URL(script, location.href);
+    if (!allowedOrigins.includes(scriptURL.origin)) {
+      console.log('Creating worker from blocked origin:', scriptURL.origin);
+      return;
+    }
+    console.log('Tap into creating worker:', scriptURL.href);
+    const injectPrefix = `(function() {
+      const allowedOrigins = [ ${allowedOriginsString} ];
+      const proxySites = [ ${proxySitesString} ];
+      const proxyURL = '${proxyURL}';
+      const oldFetch = globalThis.fetch;
+      globalThis.fetch = async function(url, options = {}) {
+        const urlObj = url instanceof URL ? url : new URL(url instanceof Request ? url.url : url, location.href);
+        if (allowedOrigins.includes(urlObj.origin)) {
+          return oldFetch(url instanceof Request ? url : urlObj, options);
+        }
+        if (proxySites && proxySites.includes(urlObj.origin)) {
+           // rewrite the URL and response
+          const resURL = proxyURL + urlObj.hostname + urlObj.pathname;
+          console.log('proxy url debug', resURL, urlObj.href);
+          if (url instanceof Request) {
+            const request = url;
+            const newRequest = new Request(resURL, {
+              method: request.method,
+              headers: request.headers,
+              body: request.body,
+              credentials: request.credentials,
+              mode: request.mode,
+              integrity: request.integrity,
+              keepalive: request.keepalive,
+              referrerPolicy: request.referrerPolicy,
+              cache: request.cache,
+              redirect: request.redirect,
+              referrer: request.referrer,
+              signal: request.signal
+          });
+          console.log('proxy request debug', newRequest, request);
+          return oldFetch(newRequest, options);
+        } else {
+          urlObj.href = resURL;
+          return oldFetch(urlObj, options);
+        }
+      }
+      console.log('alien fetch URL worker:', urlObj.href);
+      return new Response('Blocked domain, access forbidden',{
+        status: 403,
+        statusText: 'Forbidden',
+        headers: { 'Content-Type': 'text/plain' }
+      });
+      };
+      Object.defineProperty(globalThis, 'location', {
+        value: new URL('${scriptURL.href}'),
+        writable: false,
+        configurable: false,
+        enumerable: true,
+      });
+      })();`;
+    const inject =
+      injectPrefix +
+      (options?.type === 'module'
+        ? `
+      import('${scriptURL.href}').catch(error => {
+        console.error('Can not load module patching Worker:', error);
+      });`
+        : `
+      importScripts('${scriptURL.href}')
+      `);
+    const blob = new Blob([inject], { type: 'application/javascript' });
+    const url = URL.createObjectURL(blob);
+    const newWorker = new oldWorker(url, options);
+    newWorker.addEventListener(
+      'message',
+      () => {
+        URL.revokeObjectURL(url);
+      },
+      { once: true }
+    );
+    return newWorker;
+  } as unknown as typeof Worker;
+
+  NewWorker.prototype = oldWorker.prototype;
+  NewWorker.prototype.constructor = NewWorker;
+  globalThis.Worker = NewWorker;
+  fetchPatchInstalled = true;
 };
 
 class FailsLauncherInfo implements IFailsLauncherInfo {
@@ -425,6 +587,9 @@ function activateFailsLauncher(
           docManager.autosave = false; // do not autosave
           if (loadJupyterInfo.installScreenShotPatches) {
             installScreenShotPatches();
+          }
+          if (loadJupyterInfo.installGDPRProxy) {
+            installFetchPatches(loadJupyterInfo.installGDPRProxy);
           }
           // TODO send fileData to contents together with filename, and wait for fullfillment
           // may be use a promise for fullfillment, e.g. pass a resolve
