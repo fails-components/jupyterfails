@@ -37,7 +37,8 @@ import {
   IReportFailsAppletSizes,
   IScreenShotOpts,
   IDocDirty,
-  IFailsAppletSize
+  IFailsAppletSize,
+  IGDPRProxyInfo
 } from '@fails-components/jupyter-launcher';
 import { JSONObject, PartialJSONObject } from '@lumino/coreutils';
 import '../style/index.css';
@@ -59,6 +60,7 @@ interface IJupyterEditProps {
   appid?: string; // id of the applet or undefined if not in applet mode
   rerunAtStartup: boolean;
   installScreenShotPatches: boolean; // install patches to allow screenshots of plotly
+  GDPRProxy?: IGDPRProxyInfo;
   editActivated?: boolean; // whether the jupyter edit is activated.
   pointerOff?: boolean; // if true, no pointer interaction with jupyter is possible
 }
@@ -136,6 +138,7 @@ export class JupyterEdit extends Component<
       inLecture: !!this.props.appid,
       rerunAtStartup: !!this.props.rerunAtStartup,
       installScreenShotPatches: !!this.props.installScreenShotPatches,
+      installGDPRProxy: this.props.GDPRProxy,
       appid: this.props.appid,
       fileName: this.props.filename || 'example.ipynb',
       fileData: data,
