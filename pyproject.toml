@@ -31,7 +31,7 @@ source = "nodejs"
 path = "package.json"
 
 [tool.hatch.build]
-packages = ["packages/applet-view", "packages/filesystem-extension", "packages/interceptor", "packages/launcher"]
+packages = ["packages/applet-view", "packages/filesystem-extension", "packages/jupyterreactedit", "packages/interceptor", "packages/launcher"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
