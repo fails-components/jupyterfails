@@ -3,7 +3,7 @@ requires = ["hatchling>=1.5.0", "hatch-nodejs-version>=0.3.2"]
 build-backend = "hatchling.build"
 
 [project]
-name = "fails_components_jupyter_react_edit"
+name = "fails-components-jupyter-react-edit"
 readme = "README.md"
 license = { file = "LICENSE" }
 classifiers = [
