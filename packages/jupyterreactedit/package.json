@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-react-edit",
-    "version": "0.0.1",
+    "version": "0.0.1-alpha.0",
     "description": "A react control, that lets you embed jupyter lite in your application including applets with screenshots etc.",
     "keywords": [
         "jupyter",
@@ -52,7 +52,7 @@
         "watch:src": "tsc -w --sourceMap"
     },
     "devDependencies": {
-        "@fails-components/jupyter-launcher": "workspace:^",
+        "@fails-components/jupyter-launcher": "~0.0.1-alpha.0",
         "@types/jest": "^29.2.0",
         "@types/json-schema": "^7.0.11",
         "@types/react": "^18.0.26",
