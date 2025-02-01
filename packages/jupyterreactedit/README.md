@@ -1,4 +1,4 @@
-!["FAILS logo"](https://github.com/fails-components/jupyterfails/failslogo.svg)
+!["FAILS logo"](failslogo.svg)
 
 # Fancy automated internet lecture system (**FAILS**) - components (jupyter react edit)
 
