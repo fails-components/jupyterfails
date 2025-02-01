@@ -1,7 +1,7 @@
 .jpt-edit-iframe {
-    box-sizing: content-box;
+  box-sizing: content-box;
 }
 
 .jpyt-edit-iframe-pointeroff {
-    pointer-events: none;
+  pointer-events: none;
 }
