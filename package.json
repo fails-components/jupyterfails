@@ -76,9 +76,5 @@
         "typescript": "~5.0.2",
         "yjs": "^13.5.0"
     },
-    "sideEffects": [
-        "style/*.css",
-        "style/index.js"
-    ],
     "packageManager": "yarn@3.5.0"
 }
