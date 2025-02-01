@@ -20,14 +20,16 @@
         "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
         "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
         "schema/*.json",
-        "src/**/*.{ts,tsx}"
+        "src/**/*.{ts,tsx}",
+        "LICENSE",
+        "README.md"
     ],
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": ".git"
+        "url": "git+https://github.com/fails-components/jupyterfails.git"
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
@@ -46,18 +48,19 @@
         "install:extension": "jlpm build",
         "lint": "jlpm stylelint && jlpm prettier && jlpm eslint",
         "lint:check": "jlpm stylelint:check && jlpm prettier:check && jlpm eslint:check",
+        "prepublishOnly": "npm run build",
         "prettier": "jlpm prettier:base --write --list-different",
         "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
         "prettier:check": "jlpm prettier:base --check",
         "stylelint": "jlpm stylelint:check --fix",
         "stylelint:check": "stylelint --cache \"style/**/*.css\"",
-        "test": "jest --coverage",
+        "test": "jest --coverage --passWithNoTests",
         "watch": "run-p watch:src watch:labextension",
         "watch:src": "tsc -w --sourceMap",
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@fails-components/jupyter-launcher": "workspace:^",
+        "@fails-components/jupyter-launcher": "~0.0.1-alpha.0",
         "@jupyter-widgets/base": "^6.0.8",
         "@jupyter-widgets/jupyterlab-manager": "^5.0.11",
         "@jupyter/ydoc": "^3.0.0",

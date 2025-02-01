@@ -18,11 +18,9 @@ dynamic = ["version", "description", "authors", "urls", "keywords"]
 
 [tool.hatch.version]
 source = "nodejs"
-path = "./package.json"
 
 [tool.hatch.metadata.hooks.nodejs]
 fields = ["description", "authors", "urls"]
-path = "./package.json"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["lib"]

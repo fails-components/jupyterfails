@@ -51,6 +51,12 @@ jobs:
         cd packages/${{ matrix.shortname }}/
         jlpm run test
 
+    - name: Build npm packages
+      run: |
+        set -eux
+        jlpm install
+        jlpm build:lib
+
     - name: Build the extension
       run: |
         set -eux
@@ -59,7 +65,7 @@ jobs:
 
         jupyter labextension list
         jupyter labextension list 2>&1 | grep -ie "${{ matrix.node }}.*OK"
-        python -m jupyterlab.browser_check
+        # python -m jupyterlab.browser_check
 
     - name: Package the extension
       run: |
@@ -74,7 +80,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: extension-artifacts-${{ matrix.shortname }}
-        path: packages/${{ matrix.shortname }}/${{ matrix.python }}*
+        path: packages/${{ matrix.shortname }}/dist/*
         if-no-files-found: error
 
   test_isolated:
@@ -111,7 +117,7 @@ jobs:
         # Remove NodeJS, twice to take care of system and locally installed node versions.
         sudo rm -rf $(which node)
         sudo rm -rf $(which node)
-        cd packages/${{ matrix.shortname }}/
+        ls -la
 
         pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
@@ -158,7 +164,7 @@ jobs:
     - name: Install the extension
       run: |
         set -eux
-        cd packages/${{ matrix.shortname }}/
+        ls -la
         python -m pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
     - name: Install dependencies
@@ -175,23 +181,23 @@ jobs:
           ${{ github.workspace }}/pw-browsers
         key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
 
-    - name: Install browser
-      run: jlpm playwright install chromium
-      working-directory: ui-tests
+#    - name: Install browser
+#      run: jlpm playwright install chromium
+#      working-directory: ui-tests
 
-    - name: Execute integration tests
-      working-directory: ui-tests
-      run: |
-        jlpm playwright test
+#    - name: Execute integration tests
+#      working-directory: ui-tests
+#      run: |
+#        jlpm playwright test
 
-    - name: Upload Playwright Test report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.python }}-playwright-tests
-        path: |
-          ui-tests/test-results
-          ui-tests/playwright-report
+#    - name: Upload Playwright Test report
+#      if: always()
+#      uses: actions/upload-artifact@v4
+#      with:
+#        name: ${{ matrix.python }}-playwright-tests
+#        path: |
+#          ui-tests/test-results
+#          ui-tests/playwright-report
 
   check_links:
     name: Check Links

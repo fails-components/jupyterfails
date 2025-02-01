@@ -1727,7 +1727,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-interceptor@workspace:packages/interceptor"
   dependencies:
-    "@fails-components/jupyter-launcher": "workspace:^"
+    "@fails-components/jupyter-launcher": ~0.0.1-alpha.0
     "@jupyter-widgets/base": ^6.0.8
     "@jupyter-widgets/jupyterlab-manager": ^5.0.11
     "@jupyter/ydoc": ^3.0.0
@@ -1771,7 +1771,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fails-components/jupyter-launcher@workspace:^, @fails-components/jupyter-launcher@workspace:packages/launcher, @fails-components/jupyter-launcher@~0.0.1-alpha.0":
+"@fails-components/jupyter-launcher@workspace:packages/launcher, @fails-components/jupyter-launcher@~0.0.1-alpha.0":
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-launcher@workspace:packages/launcher"
   dependencies:

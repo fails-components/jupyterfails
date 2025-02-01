@@ -1,6 +1,6 @@
 # Fails Jupyter Lite distirbution
 
-[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/fails-components/jupyterfails/workflows/Build/badge.svg)](https://github.com/fails-components/jupyterfails/actions/workflows/build.yml)
 
 This are files for building a Jupyter lite distribution to be used within fails-components.
 It also includes a couple of extensions for the communication with fails and also for controlling applets.

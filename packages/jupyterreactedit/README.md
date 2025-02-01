@@ -1,7 +1,6 @@
 !["FAILS logo"](failslogo.svg)
+
 # Fancy automated internet lecture system (**FAILS**) - components (jupyter react edit)
-
-
 
 (c) 2024 Marten Richter
 
@@ -20,8 +19,8 @@ So the default license from Jupyter is used to be license compatible.
 
 You can install the package directly via npm from node.js:
 
-
 For installation simply run:
+
 ```
 npm install @fails-components/jupyter-react-edit
 ```
@@ -29,6 +28,7 @@ npm install @fails-components/jupyter-react-edit
 ### Usage
 
 You can integrate the React component via
+
 ```
 import { JupyterEdit } from '@fails-components/jupyter-react-edit'
 
@@ -61,5 +61,5 @@ import { JupyterEdit } from '@fails-components/jupyter-react-edit'
 />;
 
 ```
-For more information please look at the usuage of the componenent inside fails, notably inside `@fails-components\app` and `@fails-components\lectureapp`.
 
+For more information please look at the usuage of the componenent inside fails, notably inside `@fails-components\app` and `@fails-components\lectureapp`.

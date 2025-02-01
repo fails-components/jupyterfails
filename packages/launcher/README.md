@@ -1,6 +1,6 @@
 # fails_components_jupyter_launcher
 
-[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/fails-components/jupyterfails/workflows/Build/badge.svg)](https://github.com/fails-components/jupyterfails/actions/workflows/build.yml)
 
 This is an extension, where jupyter can be steering inside an iframe.
 You can load, launch and save different notebooks and applets (created with applet-view extension).
@@ -87,6 +87,7 @@ jlpm
 jlpm test
 ```
 
+<!--
 #### Integration tests
 
 This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
@@ -97,3 +98,4 @@ More information are provided within the [ui-tests](./ui-tests/README.md) README
 ### Packaging the extension
 
 See [RELEASE](RELEASE.md)
+-->

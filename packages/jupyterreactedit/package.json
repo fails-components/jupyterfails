@@ -20,14 +20,16 @@
     "files": [
         "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
         "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
-        "src/**/*.{ts,tsx}"
+        "src/**/*.{ts,tsx}",
+        "LICENSE",
+        "README.md"
     ],
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": ".git"
+        "url": "git+https://github.com/fails-components/jupyterfails.git"
     },
     "scripts": {
         "build": "jlpm build:lib",
@@ -37,17 +39,18 @@
         "clean": "jlpm clean:lib",
         "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
         "clean:lintcache": "rimraf .eslintcache .stylelintcache",
-        "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
+        "clean:all": "jlpm clean:lib && jlpm clean:lintcache",
         "eslint": "jlpm eslint:check --fix",
         "eslint:check": "eslint . --cache --ext .ts,.tsx",
         "lint": "jlpm stylelint && jlpm prettier && jlpm eslint",
         "lint:check": "jlpm stylelint:check && jlpm prettier:check && jlpm eslint:check",
+        "prepublishOnly": "npm run build",
         "prettier": "jlpm prettier:base --write --list-different",
         "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md}\"",
         "prettier:check": "jlpm prettier:base --check",
         "stylelint": "jlpm stylelint:check --fix",
         "stylelint:check": "stylelint --cache \"style/**/*.css\"",
-        "test": "jest --coverage",
+        "test": "jest --coverage --passWithNoTests",
         "watch": "run-p watch:src",
         "watch:src": "tsc -w --sourceMap"
     },

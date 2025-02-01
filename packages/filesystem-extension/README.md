@@ -1,6 +1,6 @@
 # fails_components_jupyter_filesystem_extension
 
-[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/fails-components/jupyterfails/workflows/Build/badge.svg)](https://github.com/fails-components/jupyterfails/actions/workflows/build.yml)
 
 This is an extension, that taps into jupyter lite's filesystem handling to be able to remotely control and supply the files visible to jupyter lite.
 It is probably only useful together with fails-components' jupyter launcher plugin,
@@ -88,6 +88,7 @@ jlpm
 jlpm test
 ```
 
+<!--
 #### Integration tests
 
 This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
@@ -98,3 +99,4 @@ More information are provided within the [ui-tests](./ui-tests/README.md) README
 ### Packaging the extension
 
 See [RELEASE](RELEASE.md)
+-->
