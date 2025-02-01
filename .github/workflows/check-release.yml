@@ -12,21 +12,6 @@ concurrency:
 jobs:
   check_release:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - node: "@fails-components/jupyter-applet-view"
-            python: "fails_components_jupyter_applet_view"
-            shortname: "applet-view"
-          - node: "@fails-components/jupyter-filesystem-extension"
-            python: "fails_components_jupyter_filesystem_extension"
-            shortname: "filesystem-extension"
-          - node: "@fails-components/jupyter-interceptor"
-            python: "fails_components_jupyter_interceptor"
-            shortname: "interceptor"
-          - node: "@fails-components/jupyter-launcher"
-            python: "fails_components_jupyter_launcher"
-            shortname: "launcher"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
