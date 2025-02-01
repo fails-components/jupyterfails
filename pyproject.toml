@@ -43,7 +43,7 @@ ignore = [".*"]
 skip = [ "build-python", "check-links", "check-python", "check-npm"]
 
 [tool.jupyter-releaser.options]
-version_cmd = "hatch version"
+version_cmd = """npx -p lerna@6.4.1 -y lerna version --no-git-tag-version --no-push --force-publish -y $1 || exit 1"""
 
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
