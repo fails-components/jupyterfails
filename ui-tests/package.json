@@ -1,6 +1,6 @@
 {
   "name": "@fails-components/jupyter-applet-view-ui-tests",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "JupyterLab @fails-components/jupyter-applet-view Integration Tests",
   "private": true,
   "scripts": {
