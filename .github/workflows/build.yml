@@ -80,7 +80,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: extension-artifacts-${{ matrix.shortname }}
-        path: packages/${{ matrix.shortname }}/${{ matrix.python }}*
+        path: packages/${{ matrix.shortname }}/*
         if-no-files-found: error
 
   test_isolated:
@@ -118,7 +118,6 @@ jobs:
         sudo rm -rf $(which node)
         sudo rm -rf $(which node)
         ls -la
-        ls -la ${{ matrix.python }}
 
         pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
@@ -166,8 +165,6 @@ jobs:
       run: |
         set -eux
         ls -la
-        ls -la ${{ matrix.python }}
-        cd packages/${{ matrix.shortname }}/
         python -m pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
     - name: Install dependencies
