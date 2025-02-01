@@ -54,6 +54,7 @@ jobs:
     - name: Build the extension
       run: |
         set -eux
+        jlpm install
         cd packages/${{ matrix.shortname }}/
         python -m pip install .[test]
 
