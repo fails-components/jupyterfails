@@ -86,7 +86,7 @@ To execute them, execute:
 jlpm
 jlpm test
 ```
-
+<!--
 #### Integration tests
 
 This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
@@ -97,3 +97,4 @@ More information are provided within the [ui-tests](./ui-tests/README.md) README
 ### Packaging the extension
 
 See [RELEASE](RELEASE.md)
+-->
