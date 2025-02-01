@@ -48,7 +48,7 @@
         "prettier:check": "jlpm prettier:base --check",
         "stylelint": "jlpm stylelint:check --fix",
         "stylelint:check": "stylelint --cache \"style/**/*.css\"",
-        "test": "jest --coverage",
+        "test": "jest --coverage --passWithNoTests",
         "watch": "run-p watch:src",
         "watch:src": "tsc -w --sourceMap"
     },
