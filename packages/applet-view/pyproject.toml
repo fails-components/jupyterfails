@@ -28,11 +28,9 @@ dynamic = ["version", "description", "authors", "urls", "keywords"]
 
 [tool.hatch.version]
 source = "nodejs"
-path = "fails_components_jupyter_applet_view/labextension/package.json"
 
 [tool.hatch.metadata.hooks.nodejs]
 fields = ["description", "authors", "urls"]
-path = "fails_components_jupyter_applet_view/labextension/package.json"
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["fails_components_jupyter_applet_view/labextension"]
