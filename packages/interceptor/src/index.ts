@@ -129,7 +129,7 @@ function activateWidgetInterceptor(
   }
   const addKernelInterceptor = (kernel: Kernel.IKernelConnection) => {
     kernel.anyMessage.connect((sender, args) => {
-    /*  console.log(
+      /*  console.log(
         'Intercept any message',
         args,
         args?.msg?.header?.msg_id,
