@@ -1,6 +1,6 @@
 # fails_components_jupyter_interceptor
 
-[![Github Actions Status](https://github.com/@fails-components/jupyterfails/workflows/Build/badge.svg)](https://github.com/@fails-components/jupyterfails/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/fails-components/jupyterfails/workflows/Build/badge.svg)](https://github.com/fails-components/jupyterfails/actions/workflows/build.yml)
 
 This is an extension, that intercepts message's to and from output views and its widgets, in order to puppet external jupyter deployments of clients listening to a central instructor.
 It can be used together with the fails_components_jupyter_launcher.
