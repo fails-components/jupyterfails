@@ -51,10 +51,15 @@ jobs:
         cd packages/${{ matrix.shortname }}/
         jlpm run test
 
-    - name: Build the extension
+    - name: Build npm packages
       run: |
         set -eux
         jlpm install
+        jlpm build:lib
+
+    - name: Build the extension
+      run: |
+        set -eux
         cd packages/${{ matrix.shortname }}/
         python -m pip install .[test]
 
