@@ -76,12 +76,6 @@ jobs:
         python -m build
         pip uninstall -y "${{ matrix.python }}" jupyterlab
 
-    - name: Diagnosis code
-      run: |
-        set -eux
-        pwd
-        ls -la
-
     - name: Upload extension packages
       uses: actions/upload-artifact@v4
       with:
@@ -124,7 +118,7 @@ jobs:
         sudo rm -rf $(which node)
         sudo rm -rf $(which node)
         ls -la
-        ls -la fails_compoenents_*
+        ls -la ${{ matrix.shortname }}
 
         pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
 
