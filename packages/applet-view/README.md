@@ -1,6 +1,6 @@
 # fails_components_jupyter_applet_view
 
-[![Github Actions Status](/workflows/Build/badge.svg)](/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/@fails-components/jupyterfails/workflows/Build/badge.svg)](https://github.com/@fails-components/jupyterfails/actions/workflows/build.yml)
 
 An extension, that let's you select cell for an applet.
 The applets are show in a splitted notebook window.
