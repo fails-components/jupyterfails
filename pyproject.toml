@@ -39,19 +39,25 @@ allow-direct-references = true
 [tool.check-manifest]
 ignore = [".*"]
 
-[tool.jupyter-releaser]
-skip = [ "build-python", "check-links", "check-python", "check-npm"]
-
 [tool.jupyter-releaser.options]
-version_cmd = "npm run versionlerna"
+version_cmd = "git status --porcelain | grep -q . || npm run versionlerna -workspace @fails-components/jupyter-monorepo"
+python_packages = [
+    "packages/applet-view",
+    "packages/filesystem-extension",
+    "packages/interceptor",
+    "packages/launcher"
+]
 
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
     "python -m pip install 'jupyterlab>=4.0.0,<5'",
-    "jlpm install",
+    "jlpm",
     "jlpm build:prod"
 ]
-before-build-python = ["jlpm clean:all"]
+before-build-python = [
+    "jlpm clean:all", 
+    "jlpm build:lib:prod"
+]
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
