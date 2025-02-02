@@ -31,7 +31,7 @@
         "clean": "jlpm clean:lib --no-private",
         "clean:lib": "lerna run clean:lib --no-private",
         "clean:lintcache": "lerna run clean:lintcache --no-private",
-        "clean:labextension": "lerna run clean:labextension--no-private",
+        "clean:labextension": "lerna run clean:labextension --no-private",
         "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
         "eslint": "lerna run eslint --no-private",
         "eslint:check": "lerna run eslint:check --no-private",
