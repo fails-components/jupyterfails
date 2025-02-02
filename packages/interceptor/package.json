@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-interceptor",
-    "version": "0.0.1-alpha.0",
+    "version": "0.0.1-alpha.3",
     "description": "A collections of plugins intercepting kernel messages and other message, to steer outputs remotely",
     "keywords": [
         "jupyter",
@@ -60,7 +60,7 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@fails-components/jupyter-launcher": "~0.0.1-alpha.0",
+        "@fails-components/jupyter-launcher": "^0.0.1-alpha.3",
         "@jupyter-widgets/base": "^6.0.8",
         "@jupyter-widgets/jupyterlab-manager": "^5.0.11",
         "@jupyter/ydoc": "^3.0.0",
