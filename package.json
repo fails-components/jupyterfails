@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-monorepo",
-    "version": "0.0.1-a2",
+    "version": "0.0.1-alpha.0",
     "private": true,
     "homepage": "",
     "bugs": {
@@ -13,6 +13,7 @@
     },
     "workspaces": {
         "packages": [
+            ".",
             "packages/*"
         ]
     },
