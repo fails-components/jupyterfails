@@ -63,6 +63,9 @@ npm = ["jlpm"]
 source_dir = "src"
 build_dir = "fails_components_jupyter_interceptor/labextension"
 
+[tool.jupyter-releaser.options]
+version_cmd = """echo "Do not change version twice to:" """
+
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
     "python -m pip install 'jupyterlab>=4.0.0,<5'",
