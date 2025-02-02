@@ -40,7 +40,7 @@ allow-direct-references = true
 ignore = [".*"]
 
 [tool.jupyter-releaser.options]
-version_cmd = "npm run versionlerna -workspace @fails-components/jupyter-monorepo"
+version_cmd = "git status --porcelain | grep -q . || npm run versionlerna -workspace @fails-components/jupyter-monorepo"
 python_packages = [
     "packages/applet-view",
     "packages/filesystem-extension",

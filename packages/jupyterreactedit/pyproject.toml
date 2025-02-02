@@ -46,9 +46,6 @@ npm = ["jlpm"]
 source_dir = "src"
 build_dir = "lib"
 
-[tool.jupyter-releaser.options]
-version_cmd = """echo "Do not change version twice to:" """
-
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
     "jlpm",
