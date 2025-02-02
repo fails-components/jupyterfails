@@ -39,9 +39,6 @@ allow-direct-references = true
 [tool.check-manifest]
 ignore = [".*"]
 
-[tool.jupyter-releaser]
-skip = [ "build-python", "check-links", "check-python", "check-npm"]
-
 [tool.jupyter-releaser.options]
 version_cmd = "npm run versionlerna"
 
