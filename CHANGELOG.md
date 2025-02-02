@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.1alpha10
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.1-alpha.9...83a3f28324b1660eae0cb9cf0a2478c78b800777))
+
+### Enhancements made
+
+- Add importScripts to proxy [#12](https://github.com/fails-components/jupyterfails/pull/12) ([@martenrichter](https://github.com/martenrichter))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-02-02&to=2025-02-02&type=c))
+
+[@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-02-02..2025-02-02&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.1alpha9
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.1-alpha.8...8c58fbc9744fdd1e69240e25c30df661cdc9d539))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-02-02&to=2025-02-02&type=c))
 
 [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-02-02..2025-02-02&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1alpha8
 
