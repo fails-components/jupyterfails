@@ -283,6 +283,20 @@ const installFetchPatches = ({
       headers: { 'Content-Type': 'text/plain' }
     });
   };
+  const oldImportScripts = globalThis.importScripts;
+  globalThis.importScripts = (...args) => {
+    const newargs = args.map(url => {
+      const urlObj = new URL(url, location.href);
+      if (allowedOrigins.includes(urlObj.origin)) {
+        return url;
+      }
+      if (proxySites && proxySites.includes(urlObj.origin)) {
+        return proxyURL + urlObj.hostname + urlObj.pathname;
+      }
+      throw new Error('Script is from blocked URL');
+    });
+    return oldImportScripts(...newargs);
+  };
   const oldWorker = Worker;
   const NewWorker = function (
     script: string | URL,
@@ -338,6 +352,20 @@ const installFetchPatches = ({
         statusText: 'Forbidden',
         headers: { 'Content-Type': 'text/plain' }
       });
+      };
+      const oldImportScripts = globalThis.importScripts;
+      globalThis.importScripts = (...args) => {
+      const newargs = args.map(url => {
+        const urlObj = new URL(url, location.href);
+        if (allowedOrigins.includes(urlObj.origin)) {
+          return url;
+        }
+        if (proxySites && proxySites.includes(urlObj.origin)) {
+          return proxyURL + urlObj.hostname + urlObj.pathname;
+        }
+          throw new Error('Script is from blocked URL');
+        });
+        return oldImportScripts(...newargs);
       };
       Object.defineProperty(globalThis, 'location', {
         value: new URL('${scriptURL.href}'),
