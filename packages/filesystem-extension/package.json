@@ -7,7 +7,7 @@
         "jupyterlite",
         "jupyterlite-extension"
     ],
-    "homepage": "",
+    "homepage": "https://github.com/fails-components/jupyterfails",
     "bugs": {
         "url": "/issues"
     },
