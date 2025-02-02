@@ -10,7 +10,7 @@
     ],
     "homepage": "https://github.com/fails-components/jupyterfails",
     "bugs": {
-        "url": "/issues"
+        "url": "https://github.com/fails-components/jupyterfails/issues"
     },
     "license": "BSD-3-Clause",
     "author": {
