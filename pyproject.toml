@@ -41,6 +41,12 @@ ignore = [".*"]
 
 [tool.jupyter-releaser.options]
 version_cmd = "npm run versionlerna"
+python_packages = [
+    "packages/applet-view",
+    "packages/filesystem-extension",
+    "packages/interceptor",
+    "packages/launcher"
+]
 
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
