@@ -48,7 +48,7 @@ version_cmd = "npm run versionlerna"
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
     "python -m pip install 'jupyterlab>=4.0.0,<5'",
-    "jlpm --verbose",
+    "jlpm install--verbose",
     "jlpm build:prod"
 ]
 before-build-python = ["jlpm clean:all"]
