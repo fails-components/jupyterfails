@@ -1626,8 +1626,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-applet-view@workspace:packages/applet-view"
   dependencies:
-    "@fails-components/jupyter-interceptor": ^0.0.1-alpha.7
-    "@fails-components/jupyter-launcher": ^0.0.1-alpha.7
+    "@fails-components/jupyter-interceptor": ^0.0.1-alpha.8
+    "@fails-components/jupyter-launcher": ^0.0.1-alpha.8
     "@jupyter-notebook/application": ^7.2.0
     "@jupyter-widgets/jupyterlab-manager": ^5.0.13
     "@jupyterlab/application": ^4.3.4
@@ -1685,7 +1685,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-filesystem-extension@workspace:packages/filesystem-extension"
   dependencies:
-    "@fails-components/jupyter-launcher": ^0.0.1-alpha.7
+    "@fails-components/jupyter-launcher": ^0.0.1-alpha.8
     "@jupyter-widgets/jupyterlab-manager": ^5.0.11
     "@jupyterlab/application": ^4.3.4
     "@jupyterlab/builder": ^4.0.0
@@ -1723,11 +1723,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fails-components/jupyter-interceptor@^0.0.1-alpha.7, @fails-components/jupyter-interceptor@workspace:packages/interceptor":
+"@fails-components/jupyter-interceptor@^0.0.1-alpha.8, @fails-components/jupyter-interceptor@workspace:packages/interceptor":
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-interceptor@workspace:packages/interceptor"
   dependencies:
-    "@fails-components/jupyter-launcher": ^0.0.1-alpha.7
+    "@fails-components/jupyter-launcher": ^0.0.1-alpha.8
     "@jupyter-widgets/base": ^6.0.8
     "@jupyter-widgets/jupyterlab-manager": ^5.0.11
     "@jupyter/ydoc": ^3.0.0
@@ -1771,7 +1771,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@fails-components/jupyter-launcher@^0.0.1-alpha.7, @fails-components/jupyter-launcher@workspace:packages/launcher":
+"@fails-components/jupyter-launcher@^0.0.1-alpha.8, @fails-components/jupyter-launcher@workspace:packages/launcher":
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-launcher@workspace:packages/launcher"
   dependencies:
@@ -1856,7 +1856,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@fails-components/jupyter-react-edit@workspace:packages/jupyterreactedit"
   dependencies:
-    "@fails-components/jupyter-launcher": ^0.0.1-alpha.7
+    "@fails-components/jupyter-launcher": ^0.0.1-alpha.8
     "@types/jest": ^29.2.0
     "@types/json-schema": ^7.0.11
     "@types/react": ^18.0.26
