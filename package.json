@@ -44,6 +44,7 @@
         "stylelint": "lerna run stylelint",
         "stylelint:check": "lerna run stylelint:check",
         "test": "lerna run test",
+        "versionlerna": "f() { npx -p lerna@6.6.2 -y lerna version --no-git-tag-version --no-push --force-publish -y \"$1\" || exit 1; }; f",
         "watch": "run-p watch:src watch:labextension",
         "watch:src": "lerna exec --stream --parallel tsc -w --sourceMap",
         "watch:labextension": "lerna exec --stream jupyter labextension watch ."
