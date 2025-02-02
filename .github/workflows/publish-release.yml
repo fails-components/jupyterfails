@@ -39,18 +39,6 @@ jobs:
           release_url: ${{ github.event.inputs.release_url }}
           steps_to_skip: ${{ github.event.inputs.steps_to_skip }}
 
-      - name: Finalize Release for github packages
-        id: finalize-release-gh-packages
-        env:
-          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_REGISTRY: https://npm.pkg.github.com/
-        uses: jupyter-server/jupyter_releaser/.github/actions/finalize-release@v2
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          steps_to_skip: "forwardport-changelog,publish-release"
-# no release_url as we only want to publish to npm          
-#          release_url: ${{ steps.populate-release.outputs.release_url }}
-
       - name: Finalize Release
         id: finalize-release
         env:
@@ -63,6 +51,25 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           release_url: ${{ steps.populate-release.outputs.release_url }}
+
+      - name: Prepare for github package release and clean python packages
+        id: clean-python-packages
+        run: |
+          set -eux
+          rm dist/*.whl
+          rm dist/*.gz
+          
+      - name: Finalize Release for github packages
+        id: finalize-release-gh-packages
+        env:
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_REGISTRY: https://npm.pkg.github.com/
+        uses: jupyter-server/jupyter_releaser/.github/actions/finalize-release@v2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          steps_to_skip: "forwardport-changelog,publish-release"
+# no release_url as we only want to publish to npm          
+#          release_url: ${{ steps.populate-release.outputs.release_url }}
 
       - name: "** Next Step **"
         if: ${{ success() }}
