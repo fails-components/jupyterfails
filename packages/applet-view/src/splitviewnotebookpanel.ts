@@ -41,7 +41,8 @@ export class SplitViewNotebookPanel
     // 2. add a BoxLayout instead
     const splitPanel = new AccordionPanel({
       spacing: 1,
-      orientation: 'horizontal'
+      orientation: 'horizontal',
+      alignment: 'justify'
     });
     BoxLayout.setStretch(splitPanel, 1);
 
@@ -74,16 +75,18 @@ export class SplitViewNotebookPanel
             this.addClass('fl-jl-notebook-inlecture');
             this._appletviewWidget.inLecture = true;
             content.hide();
-            splitPanel.setRelativeSizes([0, 1]); // change sizes
+            widget.show();
             splitLayout.titleSpace = 0;
+            splitPanel.setRelativeSizes([0, 1]); // change sizes
           } else {
             this.toolbar.show();
             this.removeClass('fl-jl-notebook-inlecture');
             this._appletviewWidget.inLecture = false;
             content.show();
+            splitLayout.titleSpace = 22;
             splitPanel.setRelativeSizes([1, 1]); // change sizes
             widget.unselectApplet();
-            splitLayout.titleSpace = 22;
+            setTimeout(() => splitPanel.setRelativeSizes([1, 1]), 1);
           }
         }
       );
