@@ -72,7 +72,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       this.addApplet({ appid, appname: 'Applet 1' });
     }
     this.id = `AppletView-${UUID.uuid4()}`;
-    this.title.label = 'Applets Preview';
+    this.title.label = 'Applet area';
     this.title.icon = notebookIcon;
     this.title.caption = this._notebook.title.label
       ? trans.__('For Notebook: %1', this._notebook.title.label)
