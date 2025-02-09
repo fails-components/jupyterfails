@@ -72,7 +72,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       this.addApplet({ appid, appname: 'Applet 1' });
     }
     this.id = `AppletView-${UUID.uuid4()}`;
-    this.title.label = 'Applets Preview';
+    this.title.label = 'Applet area';
     this.title.icon = notebookIcon;
     this.title.caption = this._notebook.title.label
       ? trans.__('For Notebook: %1', this._notebook.title.label)
@@ -935,11 +935,19 @@ export class AppletViewRenderer extends AccordionPanel.Renderer {
       handle.appendChild(editLabel);
     });
     editLabel.addEventListener('blur', (ev: FocusEvent) => {
+      // Firefox and Safari needs this
+      if (editLabel.value !== title) {
+        editLabel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
       handle.removeChild(editLabel);
       handle.appendChild(staticLabel);
     });
     editLabel.addEventListener('keydown', (ev: KeyboardEvent) => {
       if (ev.key === 'Enter') {
+        if (editLabel.value !== title) {
+          editLabel.dispatchEvent(new Event('change', { bubbles: true }));
+        }
         handle.removeChild(editLabel);
         handle.appendChild(staticLabel);
       }

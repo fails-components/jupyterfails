@@ -7,7 +7,7 @@ import {
   NotebookWidgetFactory,
   StaticNotebook
 } from '@jupyterlab/notebook';
-import { BoxLayout, SplitPanel } from '@lumino/widgets';
+import { BoxLayout, AccordionPanel, AccordionLayout } from '@lumino/widgets';
 import { AppletViewOutputArea } from './avoutputarea';
 import {
   IFailsLauncherInfo,
@@ -39,9 +39,10 @@ export class SplitViewNotebookPanel
     const layout = this.layout as BoxLayout;
     layout.removeWidget(content);
     // 2. add a BoxLayout instead
-    const splitPanel = new SplitPanel({
+    const splitPanel = new AccordionPanel({
       spacing: 1,
-      orientation: 'horizontal'
+      orientation: 'horizontal',
+      alignment: 'justify'
     });
     BoxLayout.setStretch(splitPanel, 1);
 
@@ -55,6 +56,8 @@ export class SplitViewNotebookPanel
     }));
     splitPanel.addWidget(widget);
     layout.addWidget(splitPanel);
+    const splitLayout = splitPanel.layout as AccordionLayout;
+    splitLayout.titleSpace = 22;
     // move to separate handler
     if (failsLauncherInfo?.inLecture) {
       this.toolbar.hide();
@@ -62,6 +65,7 @@ export class SplitViewNotebookPanel
       this._appletviewWidget.inLecture = true;
       content.hide();
       splitPanel.setRelativeSizes([0, 1]); // change sizes
+      splitLayout.titleSpace = 0;
     }
     if (failsLauncherInfo) {
       failsLauncherInfo.inLectureChanged.connect(
@@ -71,14 +75,18 @@ export class SplitViewNotebookPanel
             this.addClass('fl-jl-notebook-inlecture');
             this._appletviewWidget.inLecture = true;
             content.hide();
+            widget.show();
+            splitLayout.titleSpace = 0;
             splitPanel.setRelativeSizes([0, 1]); // change sizes
           } else {
             this.toolbar.show();
             this.removeClass('fl-jl-notebook-inlecture');
             this._appletviewWidget.inLecture = false;
             content.show();
+            splitLayout.titleSpace = 22;
             splitPanel.setRelativeSizes([1, 1]); // change sizes
             widget.unselectApplet();
+            setTimeout(() => splitPanel.setRelativeSizes([1, 1]), 1);
           }
         }
       );
