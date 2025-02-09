@@ -2,6 +2,12 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.1alpha12
+
+No merged PRs
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.1alpha11
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.1-alpha.10...753ea9bcf6d671929c4d7aa351e93eae87a983c2))
@@ -19,8 +25,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-02-02&to=2025-02-09&type=c))
 
 [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-02-02..2025-02-09&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1alpha10
 
