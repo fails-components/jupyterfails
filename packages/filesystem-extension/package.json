@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-filesystem-extension",
-    "version": "0.0.1-alpha.10",
+    "version": "0.0.1-alpha.11",
     "description": "A collection of extensions, that redirect's filesystems access to fails and let fails puppeteer Jupyter lite. ",
     "keywords": [
         "jupyter",
@@ -60,7 +60,7 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@fails-components/jupyter-launcher": "^0.0.1-alpha.10",
+        "@fails-components/jupyter-launcher": "^0.0.1-alpha.11",
         "@jupyter-widgets/jupyterlab-manager": "^5.0.11",
         "@jupyterlab/application": "^4.3.4",
         "@jupyterlab/services": "^7.3.4",
