@@ -30,6 +30,27 @@ jobs:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
+      - name: Populate Release for github packages
+        id: populate-release-gh-packages
+        uses: jupyter-server/jupyter_releaser/.github/actions/populate-release@v2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ github.event.inputs.branch }}
+          release_url: ${{ github.event.inputs.release_url }}
+          steps_to_skip: "build-python,check-python,check-python"
+
+      - name: Finalize Release for github packages
+        id: finalize-release-gh-packages
+        env:
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_REGISTRY: https://npm.pkg.github.com/
+          TWINE_COMMAND: "echo Skip python file with options "
+        uses: jupyter-server/jupyter_releaser/.github/actions/finalize-release@v2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          steps_to_skip: "forwardport-changelog,publish-release"     
+          release_url: ${{ steps.populate-release.outputs.release_url }}
+
       - name: Populate Release
         id: populate-release
         uses: jupyter-server/jupyter_releaser/.github/actions/populate-release@v2
@@ -51,18 +72,6 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
           release_url: ${{ steps.populate-release.outputs.release_url }}
-
-      - name: Finalize Release for github packages
-        id: finalize-release-gh-packages
-        env:
-          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_REGISTRY: https://npm.pkg.github.com/
-          TWINE_COMMAND: "echo Skip python file with options "
-        uses: jupyter-server/jupyter_releaser/.github/actions/finalize-release@v2
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          steps_to_skip: "forwardport-changelog,publish-release"     
- #         release_url: ${{ steps.populate-release.outputs.release_url }}
 
       - name: "** Next Step **"
         if: ${{ success() }}
