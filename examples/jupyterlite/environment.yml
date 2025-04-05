@@ -15,3 +15,6 @@ dependencies:
   - anywidget
   - scipy
   - sympy
+  - qutip
+  - pip:
+    - quspin
