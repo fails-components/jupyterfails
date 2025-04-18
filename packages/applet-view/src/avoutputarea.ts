@@ -409,7 +409,9 @@ export class AppletViewOutputArea extends AccordionPanel {
     // clear applets
     this._applets = [];
     if (this.layout) {
-      (this.layout as PanelLayout).widgets.forEach((widget: Widget) =>
+      // we need a copy, as forEach does not work, if an item is removed
+      const widgetCopy = [...(this.layout as PanelLayout).widgets]
+      widgetCopy.forEach((widget: Widget) =>
         this.layout?.removeWidget(widget)
       );
     }
