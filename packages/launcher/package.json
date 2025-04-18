@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-launcher",
-    "version": "0.0.1-alpha.12",
+    "version": "0.0.1-alpha.15",
     "description": "A collections of plugins steering an iframe with jupyter remotely",
     "keywords": [
         "jupyter",

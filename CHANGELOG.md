@@ -2,11 +2,29 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.1alpha15
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha12...27d51c494b042ee20d01db197c32e8b82620a8af))
+
+### Enhancements made
+
+- Add qutip and quspin [#14](https://github.com/fails-components/jupyterfails/pull/14) ([@martenrichter](https://github.com/martenrichter))
+
+### Bugs fixed
+
+- Fix loadData UI updates [#15](https://github.com/fails-components/jupyterfails/pull/15) ([@martenrichter](https://github.com/martenrichter))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-02-09&to=2025-04-18&type=c))
+
+[@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-02-09..2025-04-18&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.1alpha12
 
 No merged PRs
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1alpha11
 
