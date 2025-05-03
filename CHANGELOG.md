@@ -2,6 +2,32 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.1alpha18
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha15...87b6d1a063d657ab5180ccf123b748bc1f5e3afe))
+
+### Enhancements made
+
+- Try custom releaser to fix dual npm release [#17](https://github.com/fails-components/jupyterfails/pull/17) ([@martenrichter](https://github.com/martenrichter))
+
+### Bugs fixed
+
+- Try to split only finalize release [#19](https://github.com/fails-components/jupyterfails/pull/19) ([@martenrichter](https://github.com/martenrichter))
+- Fix publish-release with correct branch [#18](https://github.com/fails-components/jupyterfails/pull/18) ([@martenrichter](https://github.com/martenrichter))
+- Try custom releaser to fix dual npm release [#17](https://github.com/fails-components/jupyterfails/pull/17) ([@martenrichter](https://github.com/martenrichter))
+
+### Maintenance and upkeep improvements
+
+- Bump axios from 1.7.9 to 1.8.4 [#16](https://github.com/fails-components/jupyterfails/pull/16) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-04-18&to=2025-05-03&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Adependabot+updated%3A2025-04-18..2025-05-03&type=Issues) | [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-04-18..2025-05-03&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.1alpha17
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha15...9a0ee4734ba7157a4de920923e7bf1be2b6514c1))
@@ -24,8 +50,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-04-18&to=2025-05-03&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Adependabot+updated%3A2025-04-18..2025-05-03&type=Issues) | [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-04-18..2025-05-03&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1alpha15
 

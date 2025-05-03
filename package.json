@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-monorepo",
-    "version": "0.0.1-alpha.17",
+    "version": "0.0.1-alpha.18",
     "private": true,
     "homepage": "https://github.com/fails-components/jupyterfails",
     "bugs": {
