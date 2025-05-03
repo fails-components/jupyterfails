@@ -2,6 +2,31 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.1alpha17
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha15...9a0ee4734ba7157a4de920923e7bf1be2b6514c1))
+
+### Enhancements made
+
+- Try custom releaser to fix dual npm release [#17](https://github.com/fails-components/jupyterfails/pull/17) ([@martenrichter](https://github.com/martenrichter))
+
+### Bugs fixed
+
+- Fix publish-release with correct branch [#18](https://github.com/fails-components/jupyterfails/pull/18) ([@martenrichter](https://github.com/martenrichter))
+- Try custom releaser to fix dual npm release [#17](https://github.com/fails-components/jupyterfails/pull/17) ([@martenrichter](https://github.com/martenrichter))
+
+### Maintenance and upkeep improvements
+
+- Bump axios from 1.7.9 to 1.8.4 [#16](https://github.com/fails-components/jupyterfails/pull/16) ([@dependabot](https://github.com/dependabot))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-04-18&to=2025-05-03&type=c))
+
+[@dependabot](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Adependabot+updated%3A2025-04-18..2025-05-03&type=Issues) | [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-04-18..2025-05-03&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.1alpha15
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha12...27d51c494b042ee20d01db197c32e8b82620a8af))
@@ -19,8 +44,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-02-09&to=2025-04-18&type=c))
 
 [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-02-09..2025-04-18&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1alpha12
 
