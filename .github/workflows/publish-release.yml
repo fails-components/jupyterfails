@@ -32,7 +32,7 @@ jobs:
 
       - name: Populate Release for github packages
         id: populate-release-gh-packages
-        uses: martenrichter/jupyter_releaser/.github/actions/populate-release@v2
+        uses: martenrichter/jupyter_releaser/.github/actions/populate-release@fix_409_error_recognition 
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: ${{ github.event.inputs.branch }}
@@ -45,7 +45,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_REGISTRY: https://npm.pkg.github.com/
           TWINE_COMMAND: "echo Skip python file with options "
-        uses: martenrichter/jupyter_releaser/.github/actions/finalize-release@v2
+        uses: martenrichter/jupyter_releaser/.github/actions/finalize-release@fix_409_error_recognition 
         with:
           token: ${{ steps.app-token.outputs.token }}
           steps_to_skip: "forwardport-changelog,publish-release"     
@@ -53,7 +53,7 @@ jobs:
 
       - name: Populate Release
         id: populate-release
-        uses: martenrichter/jupyter_releaser/.github/actions/populate-release@v2
+        uses: martenrichter/jupyter_releaser/.github/actions/populate-release@fix_409_error_recognition 
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: ${{ github.event.inputs.branch }}
@@ -68,7 +68,7 @@ jobs:
           # PYPI_TOKEN_MAP: ${{ secrets.PYPI_TOKEN_MAP }}
           # TWINE_USERNAME: __token__
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        uses: martenrichter/jupyter_releaser/.github/actions/finalize-release@v2
+        uses: martenrichter/jupyter_releaser/.github/actions/finalize-release@fix_409_error_recognition 
         with:
           token: ${{ steps.app-token.outputs.token }}
           release_url: ${{ steps.populate-release.outputs.release_url }}
