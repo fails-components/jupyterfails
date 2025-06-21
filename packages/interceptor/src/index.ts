@@ -20,7 +20,7 @@ import {
 } from '@jupyterlab/rendermime';
 import { ICellModel } from '@jupyterlab/cells';
 import { ISharedCodeCell } from '@jupyter/ydoc';
-import { JSONObject, PromiseDelegate, Token } from '@lumino/coreutils';
+import { JSONObject, PromiseDelegate } from '@lumino/coreutils';
 import { Kernel /*, KernelMessage */ } from '@jupyterlab/services';
 import {
   IFailsInterceptorUpdateMessage,
@@ -28,15 +28,9 @@ import {
   IFailsLauncherInfo
 } from '@fails-components/jupyter-launcher';
 import { Signal } from '@lumino/signaling';
+import { IFailsInterceptor } from './tokens';
 
-export interface IFailsInterceptor {
-  isMimeTypeSupported: (mimeType: string) => boolean;
-}
-
-export const IFailsInterceptor = new Token<IFailsInterceptor>(
-  '@fails-components/jupyter-fails:IFailsInterceptor',
-  'A service to talk with FAILS interceptor.'
-);
+export * from './tokens';
 
 // List of static Mimetypes, where intercepting is not necessary
 const staticMimeTypes = new Set([

@@ -1,12 +1,24 @@
-import { Contents as ServerContents } from '@jupyterlab/services';
-import { IContents } from '@jupyterlite/contents';
-import { PromiseDelegate } from '@lumino/coreutils';
-import {
-  IFailsCallbacks,
-  IContentEventType,
-  ILoadJupyterContentEvent,
-  ISavedJupyterContentEvent
-} from '@fails-components/jupyter-launcher';
+import { Contents, Drive, ServerConnection } from '@jupyterlab/services';
+import { ISignal, Signal } from '@lumino/signaling';
+
+interface IContentEvent {
+  task: string;
+}
+
+export interface ILoadJupyterContentEvent extends IContentEvent {
+  task: 'loadFile';
+  fileData: object | undefined;
+  fileName: string;
+}
+
+export interface ISavedJupyterContentEvent extends IContentEvent {
+  task: 'savedFile';
+  fileName: string;
+}
+
+export type IContentEventType =
+  | ILoadJupyterContentEvent
+  | ISavedJupyterContentEvent; // use union
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -14,17 +26,43 @@ import {
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 // This code contains portions from or is inspired by Jupyter lab and lite
+// especially the Drive implementation
 
 const jsonMime = 'application/json';
+type IModel = Contents.IModel;
 
-export class FailsContents implements IContents {
-  constructor() {
-    this._ready = new PromiseDelegate();
-    if (!(window as any).failsCallbacks) {
-      (window as any).failsCallbacks = {};
+export class FailsDrive implements Contents.IDrive {
+  constructor(options: Drive.IOptions) {
+    this._serverSettings =
+      options.serverSettings ?? ServerConnection.makeSettings();
+  }
+
+  dispose(): void {
+    if (this.isDisposed) {
+      return;
     }
-    this._failsCallbacks = (window as any).failsCallbacks;
-    this._failsCallbacks.callContents = this.onMessage.bind(this);
+    this._isDisposed = true;
+    Signal.clearData(this);
+  }
+
+  get isDisposed(): boolean {
+    return this._isDisposed;
+  }
+
+  get name(): string {
+    return 'JupyterFailsSingleFileDrive';
+  }
+
+  get serverSettings(): ServerConnection.ISettings {
+    return this._serverSettings;
+  }
+
+  get fileChanged(): ISignal<Contents.IDrive, Contents.IChangedArgs> {
+    return this._fileChanged;
+  }
+
+  async getDownloadUrl(path: string): Promise<string> {
+    throw new Error('Method not implemented.');
   }
 
   async onMessage(event: IContentEventType): Promise<any> {
@@ -34,9 +72,25 @@ export class FailsContents implements IContents {
         {
           const loadevent = event as ILoadJupyterContentEvent;
           this._fileContent = JSON.stringify(
-            loadevent.fileData || FailsContents.EMPTY_NB
+            loadevent.fileData || FailsDrive.EMPTY_NB
           );
           this._fileName = loadevent.fileName;
+          this._fileChanged.emit({
+            type: 'save',
+            oldValue: null,
+            newValue: {
+              name: this._fileName,
+              path: this._fileName,
+              last_modified: new Date(0).toISOString(),
+              created: new Date(0).toISOString(),
+              format: 'json' as Contents.FileFormat,
+              mimetype: jsonMime,
+              content: JSON.parse(this._fileContent),
+              size: 0,
+              writable: true,
+              type: 'notebook'
+            }
+          });
         }
         break;
       case 'savedFile':
@@ -53,18 +107,7 @@ export class FailsContents implements IContents {
     }
   }
 
-  get ready(): Promise<void> {
-    return this._ready.promise;
-  }
-
-  async initialize() {
-    this._ready.resolve(void 0);
-  }
-
-  async get(
-    path: string,
-    options?: ServerContents.IFetchOptions
-  ): Promise<ServerContents.IModel | null> {
+  async get(path: string, options?: Contents.IFetchOptions): Promise<IModel> {
     // remove leading slash
     path = decodeURIComponent(path.replace(/^\//, ''));
 
@@ -73,7 +116,7 @@ export class FailsContents implements IContents {
       path: this._fileName,
       last_modified: new Date(0).toISOString(),
       created: new Date(0).toISOString(),
-      format: 'json' as ServerContents.FileFormat,
+      format: 'json' as Contents.FileFormat,
       mimetype: jsonMime,
       content: JSON.parse(this._fileContent),
       size: 0,
@@ -99,27 +142,27 @@ export class FailsContents implements IContents {
     if (path === this._fileName) {
       return serverFile;
     }
-    return null; // not found
+    throw Error(`Could not find content with path ${path}`);
   }
 
   async save(
     path: string,
-    options: Partial<ServerContents.IModel> = {}
-  ): Promise<ServerContents.IModel | null> {
+    options: Partial<Contents.IModel> = {}
+  ): Promise<Contents.IModel> {
     path = decodeURIComponent(path);
     if (path !== this._fileName) {
       // we only allow the proxy object
-      return null;
+      throw Error(`File ${path} is not the proxy file`);
     }
     const chunk = options.chunk;
     const chunked = chunk ? chunk > 1 || chunk === -1 : false;
 
-    let item: ServerContents.IModel | null = await this.get(path, {
+    let item: Contents.IModel | null = await this.get(path, {
       content: chunked
     });
 
     if (!item) {
-      return null;
+      throw Error(`Could not find file with path ${path}`);
     }
 
     const modified = new Date().toISOString();
@@ -152,24 +195,29 @@ export class FailsContents implements IContents {
         size: newcontent.length
       };
       this._fileContent = JSON.stringify(newcontent); // no parsing
+      this._fileChanged.emit({
+        type: 'save',
+        oldValue: null,
+        newValue: item
+      });
       return item;
     }
 
     this._fileContent = JSON.stringify(item.content); // no parsing
+    this._fileChanged.emit({
+      type: 'save',
+      oldValue: null,
+      newValue: item
+    });
     return item;
   }
 
   // For fails creating a new file is not allowed, so no need to implment it
-  async newUntitled(
-    options?: ServerContents.ICreateOptions
-  ): Promise<ServerContents.IModel | null> {
+  async newUntitled(options?: Contents.ICreateOptions): Promise<IModel> {
     throw new Error('NewUntitled not implemented');
   }
 
-  async rename(
-    oldLocalPath: string,
-    newLocalPath: string
-  ): Promise<ServerContents.IModel> {
+  async rename(oldLocalPath: string, newLocalPath: string): Promise<IModel> {
     throw new Error('rename not implemented');
   }
 
@@ -177,19 +225,15 @@ export class FailsContents implements IContents {
     throw new Error('delete not implemented');
   }
 
-  async copy(path: string, toDir: string): Promise<ServerContents.IModel> {
+  async copy(path: string, toDir: string): Promise<IModel> {
     throw new Error('copy not implemented');
   }
 
-  async createCheckpoint(
-    path: string
-  ): Promise<ServerContents.ICheckpointModel> {
+  async createCheckpoint(path: string): Promise<Contents.ICheckpointModel> {
     throw new Error('createCheckpoint not (yet?) implemented');
   }
 
-  async listCheckpoints(
-    path: string
-  ): Promise<ServerContents.ICheckpointModel[]> {
+  async listCheckpoints(path: string): Promise<Contents.ICheckpointModel[]> {
     // throw new Error('listCheckpoints not (yet?) implemented');
     return [{ id: 'fakeCheckpoint', last_modified: new Date().toISOString() }];
   }
@@ -211,8 +255,11 @@ export class FailsContents implements IContents {
     cells: []
   };
 
-  private _ready: PromiseDelegate<void>;
-  private _fileContent: string = JSON.stringify(FailsContents.EMPTY_NB);
+  private _fileContent: string = JSON.stringify(FailsDrive.EMPTY_NB);
+  private _isDisposed = false;
+  private _fileChanged = new Signal<Contents.IDrive, Contents.IChangedArgs>(
+    this
+  );
   private _fileName: string = 'unloaded.ipynb';
-  private _failsCallbacks: IFailsCallbacks;
+  private _serverSettings: ServerConnection.ISettings;
 }

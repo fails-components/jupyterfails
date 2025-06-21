@@ -60,21 +60,19 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@jupyter-notebook/application": "^7.2.0",
-        "@jupyter-widgets/jupyterlab-manager": "^5.0.11",
-        "@jupyterlab/application": "^4.3.4",
-        "@jupyterlab/apputils": "^4.3.4",
-        "@jupyterlab/coreutils": "^6.3.4",
-        "@jupyterlab/docmanager": "^4.3.4",
-        "@jupyterlab/docregistry": "^4.3.4",
-        "@jupyterlab/notebook": "^4.3.4",
-        "@jupyterlite/application-extension": "^0.4.4",
-        "@jupyterlite/contents": "^0.4.4",
-        "@jupyterlite/server": "^0.4.4",
-        "@jupyterlite/settings": "^0.4.4",
-        "@lumino/coreutils": "^2.2.0",
-        "@lumino/signaling": "^2.1.2",
-        "@lumino/widgets": "^2.3.2",
+        "@fails-components/jupyter-filesystem-extension": "^0.0.1-alpha.18",
+        "@jupyter-notebook/application": "^7.4.3",
+        "@jupyterlab/application": "^4.4.3",
+        "@jupyterlab/apputils": "^4.5.3",
+        "@jupyterlab/docmanager": "^4.4.3",
+        "@jupyterlab/docregistry": "^4.4.3",
+        "@jupyterlab/notebook": "^4.4.3",
+        "@jupyterlab/services": "^7.4.3",
+        "@jupyterlite/application-extension": "^0.6.1",
+        "@jupyterlite/server": "^0.6.1",
+        "@lumino/coreutils": "^2.2.1",
+        "@lumino/signaling": "^2.1.4",
+        "@lumino/widgets": "^2.7.1",
         "json5": "^2.2.3"
     },
     "devDependencies": {
@@ -115,7 +113,14 @@
     "jupyterlab": {
         "extension": true,
         "outputDir": "fails_components_jupyter_launcher/labextension",
-        "schemaDir": "schema"
+        "schemaDir": "schema",
+        "sharedPackages": {
+            "@fails-components/jupyter-filesystem-extension": {
+                "singleton": true,
+                "requiredVersion": "^0.0.1-alpha.18",
+                "import": false
+            }
+        }
     },
     "eslintIgnore": [
         "node_modules",

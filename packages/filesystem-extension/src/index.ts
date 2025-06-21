@@ -1,44 +1,73 @@
-import { IContents } from '@jupyterlite/contents';
 import {
-  JupyterLiteServerPlugin,
-  JupyterLiteServer
-} from '@jupyterlite/server';
-import { ISettings } from '@jupyterlite/settings';
-import { FailsContents } from './contents';
+  IDefaultDrive,
+  Contents,
+  ServerConnection,
+  Setting,
+  ISettingManager,
+  IServerSettings,
+  ServiceManagerPlugin
+} from '@jupyterlab/services';
+import { FailsDrive, IContentEventType } from './drive';
 import { FailsSettings } from './settings';
+import { IFailsDriveMessageHandler, IFailsDriveMessages } from './token';
 
-export const failsContentsPlugin: JupyterLiteServerPlugin<IContents> = {
-  id: '@fails-components/jupyter-fails-server:contents',
+export * from './token';
+
+const failsDriveMessages: ServiceManagerPlugin<IFailsDriveMessages> = {
+  id: '@fails-components/jupyter-applet-widget:drivemessages',
   requires: [],
   autoStart: true,
-  provides: IContents,
-  activate: (app: JupyterLiteServer) => {
-    if (app.namespace !== 'JupyterLite Server') {
-      console.log('Not on server');
-    }
-    const contents = new FailsContents();
-    app.started.then(() => contents.initialize().catch(console.warn));
-    return contents;
+  provides: IFailsDriveMessages,
+  activate: (_: null) => {
+    let initialWaitRes: ((val: unknown) => void) | undefined;
+    const initialWait = new Promise(resolve => (initialWaitRes = resolve));
+    let messageHandler: IFailsDriveMessageHandler;
+    const driveMessages = {
+      registerMessageHandler: (handler: IFailsDriveMessageHandler) => {
+        messageHandler = handler;
+        if (initialWaitRes) {
+          initialWaitRes(undefined);
+        }
+        initialWaitRes = undefined;
+      },
+      sendMessage: async (msg: IContentEventType) => {
+        await initialWait;
+        return messageHandler(msg);
+      }
+    };
+    return driveMessages;
   }
 };
 
-const failsSettingsPlugin: JupyterLiteServerPlugin<ISettings> = {
-  id: '@fails-components/jupyter-fails-server:settings',
+const failsDrivePlugin: ServiceManagerPlugin<Contents.IDrive> = {
+  id: '@fails-components/jupyter-applet-widget:drive',
+  requires: [IFailsDriveMessages],
+  autoStart: true,
+  provides: IDefaultDrive,
+  activate: (_: null, driveMessages: IFailsDriveMessages) => {
+    const drive = new FailsDrive({});
+    driveMessages.registerMessageHandler(msg => drive.onMessage(msg));
+    return drive;
+  }
+};
+
+const failsSettingsPlugin: ServiceManagerPlugin<Setting.IManager> = {
+  id: '@fails-components/jupyter-applet-widget:settings',
   requires: [],
   autoStart: true,
-  provides: ISettings,
-  activate: (app: JupyterLiteServer) => {
-    if (app.namespace !== 'JupyterLite Server') {
-      console.log('Not on server');
-    }
-    const settings = new FailsSettings();
-    app.started.then(() => settings.initialize().catch(console.warn));
+  provides: ISettingManager,
+  optional: [IServerSettings],
+  activate: (_: null, serverSettings: ServerConnection.ISettings | null) => {
+    const settings = new FailsSettings({
+      serverSettings: serverSettings ?? undefined
+    });
     return settings;
   }
 };
 
-const plugins: JupyterLiteServerPlugin<any>[] = [
-  failsContentsPlugin,
+const plugins: ServiceManagerPlugin<any>[] = [
+  failsDriveMessages,
+  failsDrivePlugin,
   failsSettingsPlugin
 ];
 

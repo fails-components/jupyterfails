@@ -4,15 +4,23 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 import { IDocumentManager } from '@jupyterlab/docmanager';
-import { ServerConnection, Kernel } from '@jupyterlab/services';
-import { PageConfig, URLExt } from '@jupyterlab/coreutils';
-import { ISessionContext } from '@jupyterlab/apputils';
+import { Kernel } from '@jupyterlab/services';
+import { ISessionContext, ILicensesClient } from '@jupyterlab/apputils';
 import { IDocumentWidget } from '@jupyterlab/docregistry';
 import { INotebookShell } from '@jupyter-notebook/application';
 import { NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
-import { JSONObject, PartialJSONObject, Token } from '@lumino/coreutils';
+import { JSONObject } from '@lumino/coreutils';
 import { ISignal, Signal } from '@lumino/signaling';
 import { Panel } from '@lumino/widgets';
+import { IFailsDriveMessages } from '@fails-components/jupyter-filesystem-extension';
+import {
+  IFailsLauncherInfo,
+  IFailsAppletSize,
+  IAppletWidgetRegistry,
+  IFailsInterceptorUpdateMessage
+} from './tokens';
+
+export * from './tokens';
 
 export interface IScreenShotOpts {
   dpi: number;
@@ -20,70 +28,6 @@ export interface IScreenShotOpts {
 
 export interface IAppletScreenshottaker {
   takeAppScreenshot: (opts: IScreenShotOpts) => Promise<Blob | undefined>;
-}
-
-interface IContentEvent {
-  task: string;
-}
-
-export interface ILoadJupyterContentEvent extends IContentEvent {
-  task: 'loadFile';
-  fileData: object | undefined;
-  fileName: string;
-}
-
-export interface ISavedJupyterContentEvent extends IContentEvent {
-  task: 'savedFile';
-  fileName: string;
-}
-
-export type IContentEventType =
-  | ILoadJupyterContentEvent
-  | ISavedJupyterContentEvent; // use union
-
-export interface IFailsCallbacks {
-  callContents?: (event: IContentEventType) => Promise<any>;
-  postMessageToFails?: (message: any, transfer?: Transferable[]) => void;
-}
-
-export const IFailsLauncherInfo = new Token<IFailsLauncherInfo>(
-  '@fails-components/jupyter-fails:IFailsLauncherInfo',
-  'A service to communicate with FAILS.'
-);
-
-export interface IFailsLauncherInit {
-  inLecture: boolean;
-  selectedAppid: string | undefined;
-  reportMetadata?: (metadata: PartialJSONObject) => void;
-}
-
-export interface IFailsAppletSize {
-  appid: string;
-  width: number;
-  height: number;
-}
-
-export interface IAppletWidgetRegistry {}
-
-export interface IFailsInterceptorUpdateMessage {
-  path: string;
-  mime: string;
-  state: JSONObject;
-}
-
-export interface IFailsLauncherInfo extends IFailsLauncherInit {
-  inLectureChanged: ISignal<IFailsLauncherInfo, boolean>;
-  selectedAppidChanged: ISignal<this, string | undefined>;
-  appletSizes: { [key: string]: IFailsAppletSize };
-  appletSizesChanged: ISignal<this, { [key: string]: IFailsAppletSize }>;
-  updateMessageArrived?: ISignal<
-    IAppletWidgetRegistry,
-    IFailsInterceptorUpdateMessage
-  >;
-  remoteUpdateMessageArrived: ISignal<
-    IFailsLauncherInfo,
-    IFailsInterceptorUpdateMessage
-  >;
 }
 
 export interface IReplyJupyter {
@@ -524,10 +468,13 @@ function activateFailsLauncher(
   app: JupyterFrontEnd,
   docManager: IDocumentManager,
   status: ILabStatus,
+  licenseClient: ILicensesClient,
+  driveMessages: IFailsDriveMessages,
   shell: INotebookShell | null
 ): IFailsLauncherInfo {
   // parts taken from repl-extension
   const { /* commands, */ serviceManager, started } = app;
+  const sendMessageToDrive = driveMessages.sendMessage;
   Promise.all([started, serviceManager.ready]).then(async () => {
     /*  commands.execute('notebook:create-new', {
         kernelId: undefined,
@@ -540,33 +487,20 @@ function activateFailsLauncher(
   const failsLauncherInfo: IFailsLauncherInfo = new FailsLauncherInfo();
   let currentDocWidget: IDocumentWidget | undefined;
 
-  const serverSettings = app.serviceManager.serverSettings;
-  const licensesUrl =
-    URLExt.join(PageConfig.getBaseUrl(), PageConfig.getOption('licensesUrl')) +
-    '/';
-
-  // Install Messagehandler
-  if (!(window as any).failsCallbacks) {
-    (window as any).failsCallbacks = {};
-  }
   let senderOrigin: string | undefined;
-  const _failsCallbacks = (window as any).failsCallbacks as IFailsCallbacks;
-  _failsCallbacks.postMessageToFails = (
-    message: any,
-    transfer?: Transferable[]
-  ) => {
+  const postMessageToFails = (message: any, transfer?: Transferable[]) => {
     if (typeof senderOrigin !== 'undefined') {
       window.parent.postMessage(message, senderOrigin, transfer);
     }
   };
   status.dirtySignal.connect((sender, dirty) => {
-    _failsCallbacks.postMessageToFails!({
+    postMessageToFails!({
       task: 'docDirty',
       dirty
     });
   });
   failsLauncherInfo.reportMetadata = metadata => {
-    _failsCallbacks.postMessageToFails!({
+    postMessageToFails!({
       task: 'reportMetadata',
       metadata
     });
@@ -583,7 +517,7 @@ function activateFailsLauncher(
       sender: IFailsLauncherInfo,
       appletSizes: { [key: string]: IFailsAppletSize }
     ) => {
-      _failsCallbacks.postMessageToFails!({
+      postMessageToFails!({
         task: 'reportFailsAppletSizes',
         appletSizes
       });
@@ -594,7 +528,7 @@ function activateFailsLauncher(
     sender: IAppletWidgetRegistry,
     message: IFailsInterceptorUpdateMessage
   ): void => {
-    _failsCallbacks.postMessageToFails!({
+    postMessageToFails!({
       task: 'sendInterceptorUpdate',
       ...message
     });
@@ -623,7 +557,7 @@ function activateFailsLauncher(
           // may be use a promise for fullfillment, e.g. pass a resolve
           // afterwards we load the file or new file into to the contexts
           // we may also send license information
-          _failsCallbacks.callContents!({
+          sendMessageToDrive({
             task: 'loadFile',
             fileData: loadJupyterInfo.fileData,
             fileName: loadJupyterInfo.fileName
@@ -653,7 +587,7 @@ function activateFailsLauncher(
                 const notebookPanel = currentDocWidget as NotebookPanel;
                 notebookPanel.sessionContext.statusChanged.connect(
                   (context: ISessionContext, status: Kernel.Status) => {
-                    _failsCallbacks.postMessageToFails!({
+                    postMessageToFails!({
                       task: 'reportKernelStatus',
                       status
                     });
@@ -682,7 +616,7 @@ function activateFailsLauncher(
                 );
               }
             })
-            .catch(error => {
+            .catch((error: any) => {
               console.log('Problem task load file', error);
             });
         }
@@ -691,7 +625,7 @@ function activateFailsLauncher(
         {
           const saveJupyter = event.data as ISaveJupyter;
           if (typeof currentDocWidget === 'undefined') {
-            _failsCallbacks.postMessageToFails!({
+            postMessageToFails!({
               requestId: event.data.requestId,
               task: 'saveJupyter',
               error: 'No document loaded'
@@ -700,7 +634,7 @@ function activateFailsLauncher(
           }
           const context = docManager.contextForWidget(currentDocWidget);
           if (typeof context === 'undefined') {
-            _failsCallbacks.postMessageToFails!({
+            postMessageToFails!({
               requestId: event.data.requestId,
               task: 'saveJupyter',
               error: 'No document context'
@@ -709,22 +643,22 @@ function activateFailsLauncher(
           }
           context
             .save()
-            .then(() => {
+            .then(async () => {
               // ok it was save to our virtual disk
-              return _failsCallbacks.callContents!({
+              return await sendMessageToDrive({
                 task: 'savedFile',
                 fileName: saveJupyter.fileName
               });
             })
             .then(({ fileData }) => {
-              _failsCallbacks.postMessageToFails!({
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'saveJupyter',
                 fileData
               });
             })
             .catch((error: Error) => {
-              _failsCallbacks.postMessageToFails!({
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'saveJupyter',
                 error: error.toString()
@@ -740,7 +674,7 @@ function activateFailsLauncher(
           } else {
             failsLauncherInfo.inLecture = false;
           }
-          _failsCallbacks.postMessageToFails!({
+          postMessageToFails!({
             requestId: event.data.requestId,
             task: 'activateApp'
           });
@@ -753,7 +687,7 @@ function activateFailsLauncher(
           if (
             !(typeof (notebookPanel as any)['takeAppScreenshot'] === 'function')
           ) {
-            _failsCallbacks.postMessageToFails!({
+            postMessageToFails!({
               requestId: event.data.requestId,
               task: 'screenshotApp',
               error: 'Take App Screenshot unsupported'
@@ -766,7 +700,7 @@ function activateFailsLauncher(
             .then(async screenshot => {
               if (screenshot) {
                 const data = await screenshot.arrayBuffer();
-                _failsCallbacks.postMessageToFails?.(
+                postMessageToFails?.(
                   {
                     requestId: event.data.requestId,
                     task: 'screenshotApp',
@@ -775,7 +709,7 @@ function activateFailsLauncher(
                   [data]
                 ); // TODO add transferable
               } else {
-                _failsCallbacks.postMessageToFails?.({
+                postMessageToFails?.({
                   requestId: event.data.requestId,
                   task: 'screenshotApp',
                   error: 'Screenshot failed?'
@@ -784,7 +718,7 @@ function activateFailsLauncher(
             })
             .catch((error: Error) => {
               console.log('Screenshot error', error);
-              _failsCallbacks.postMessageToFails!({
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'screenshotApp',
                 error: error.toString()
@@ -811,7 +745,7 @@ function activateFailsLauncher(
               interceptorActivated = false;
             }
           }
-          _failsCallbacks.postMessageToFails!({
+          postMessageToFails!({
             requestId: event.data.requestId,
             task: 'activateInterceptor'
           });
@@ -824,7 +758,7 @@ function activateFailsLauncher(
           const { path, mime, state } = receiveInterceptorUpdate;
           const launcherInfo = failsLauncherInfo as FailsLauncherInfo;
           launcherInfo.receiveRemoteUpdateMessage({ path, mime, state });
-          _failsCallbacks.postMessageToFails!({
+          postMessageToFails!({
             requestId: event.data.requestId,
             task: 'receiveInterceptorUpdate'
           });
@@ -833,7 +767,7 @@ function activateFailsLauncher(
       case 'restartKernelAndRerunCells':
         {
           if (typeof currentDocWidget === 'undefined') {
-            _failsCallbacks.postMessageToFails!({
+            postMessageToFails!({
               requestId: event.data.requestId,
               task: 'restartKernelAndRerunCell',
               error: 'No document loaded'
@@ -853,14 +787,14 @@ function activateFailsLauncher(
                 cells,
                 context.sessionContext
               );
-              _failsCallbacks.postMessageToFails!({
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'restartKernelAndRerunCell',
                 success: true
               });
             })
             .catch((error: Error) => {
-              _failsCallbacks.postMessageToFails!({
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'restartKernelAndRerunCell',
                 error: error.toString()
@@ -870,17 +804,18 @@ function activateFailsLauncher(
         break;
       case 'getLicenses':
         {
-          ServerConnection.makeRequest(licensesUrl, {}, serverSettings)
-            .then(async response => {
-              const json = await response.json();
-              _failsCallbacks.postMessageToFails!({
+          // broken
+          licenseClient
+            .getBundles()
+            .then(async licenses => {
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'getLicenses',
-                licenses: json
+                licenses
               });
             })
             .catch(error => {
-              _failsCallbacks.postMessageToFails!({
+              postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'getLicenses',
                 error: error.toString()
@@ -915,12 +850,17 @@ function activateFailsLauncher(
 }
 
 const failsLauncher: JupyterFrontEndPlugin<IFailsLauncherInfo> = {
-  id: '@fails-components/jupyter-fails:launcher',
+  id: '@fails-components/jupyter-applet-widget:launcher',
   description: 'Configures the notebooks application over messages',
   autoStart: true,
   activate: activateFailsLauncher,
   provides: IFailsLauncherInfo,
-  requires: [IDocumentManager, ILabStatus],
+  requires: [
+    IDocumentManager,
+    ILabStatus,
+    ILicensesClient,
+    IFailsDriveMessages
+  ],
   optional: [INotebookShell]
 };
 
@@ -929,7 +869,6 @@ const failsLauncher: JupyterFrontEndPlugin<IFailsLauncherInfo> = {
  */
 const plugins: JupyterFrontEndPlugin<any>[] = [
   // all JupyterFrontEndPlugins
-
   failsLauncher
 ];
 
