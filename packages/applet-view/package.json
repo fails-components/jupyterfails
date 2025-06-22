@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-applet-view",
-    "version": "0.0.1-alpha.18",
+    "version": "0.0.2",
     "description": "A collection of extensions, that let's you select cell and switch to an applet mode, where only the selected cells are visible. This is used for fails-components to have jupyter applets in interactive teaching. ",
     "keywords": [
         "jupyter",
@@ -58,8 +58,8 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@fails-components/jupyter-interceptor": "^0.0.1-alpha.18",
-        "@fails-components/jupyter-launcher": "^0.0.1-alpha.18",
+        "@fails-components/jupyter-interceptor": "^0.0.2",
+        "@fails-components/jupyter-launcher": "^0.0.2",
         "@jupyter-notebook/application": "^7.4.3",
         "@jupyter-widgets/jupyterlab-manager": "^5.0.15",
         "@jupyterlab/application": "^4.4.3",

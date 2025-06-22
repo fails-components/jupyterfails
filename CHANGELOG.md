@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.2
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha18...864b672fbf1538e3d438ca85ea1531d8e671035b))
+
+### Maintenance and upkeep improvements
+
+- Migrate to jupyter lite 0.6.x [#20](https://github.com/fails-components/jupyterfails/pull/20) ([@martenrichter](https://github.com/martenrichter))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-05-03&to=2025-06-22&type=c))
+
+[@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-05-03..2025-06-22&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.1alpha18
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/v0.0.1alpha15...87b6d1a063d657ab5180ccf123b748bc1f5e3afe))
@@ -25,8 +41,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-04-18&to=2025-05-03&type=c))
 
 [@dependabot](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Adependabot+updated%3A2025-04-18..2025-05-03&type=Issues) | [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-04-18..2025-05-03&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.1alpha17
 

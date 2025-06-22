@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-launcher",
-    "version": "0.0.1-alpha.18",
+    "version": "0.0.2",
     "description": "A collections of plugins steering an iframe with jupyter remotely",
     "keywords": [
         "jupyter",
@@ -60,7 +60,7 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@fails-components/jupyter-filesystem-extension": "^0.0.1-alpha.18",
+        "@fails-components/jupyter-filesystem-extension": "^0.0.2",
         "@jupyter-notebook/application": "^7.4.3",
         "@jupyterlab/application": "^4.4.3",
         "@jupyterlab/apputils": "^4.5.3",

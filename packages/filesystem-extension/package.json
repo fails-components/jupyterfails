@@ -1,6 +1,6 @@
 {
     "name": "@fails-components/jupyter-filesystem-extension",
-    "version": "0.0.1-alpha.18",
+    "version": "0.0.2",
     "description": "A collection of extensions, that redirect's filesystems access to fails and let fails puppeteer Jupyter lite. ",
     "keywords": [
         "jupyter",
