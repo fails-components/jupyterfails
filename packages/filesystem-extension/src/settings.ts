@@ -1,6 +1,6 @@
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
-import { ISettings, IPlugin as ISettingsPlugin } from '@jupyterlite/settings';
-import { PromiseDelegate } from '@lumino/coreutils';
+import { Setting, SettingManager } from '@jupyterlab/services';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import * as json5 from 'json5';
 
 // portions used from Jupyterlab:
@@ -9,13 +9,16 @@ import * as json5 from 'json5';
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 // This code contains portions from or is inspired by Jupyter lab and lite
+export type SettingsFile = 'all.json' | 'all_federated.json';
 
-export class FailsSettings implements ISettings {
+export class FailsSettings extends SettingManager implements Setting.IManager {
   // the following is copied from the original Jupyter Lite Settings Object
-  static _overrides: Record<string, ISettingsPlugin['schema']['default']> =
-    JSON.parse(PageConfig.getOption('settingsOverrides') || '{}');
+  static _overrides: Record<
+    string,
+    ISettingRegistry.IPlugin['schema']['default']
+  > = JSON.parse(PageConfig.getOption('settingsOverrides') || '{}');
 
-  static override(plugin: ISettingsPlugin): ISettingsPlugin {
+  static override(plugin: ISettingRegistry.IPlugin): ISettingRegistry.IPlugin {
     if (FailsSettings._overrides[plugin.id]) {
       if (!plugin.schema.properties) {
         // probably malformed, or only provides keyboard shortcuts, etc.
@@ -30,32 +33,31 @@ export class FailsSettings implements ISettings {
     return plugin;
   }
 
-  constructor() {
-    this._ready = new PromiseDelegate();
+  constructor(options: SettingManager.IOptions) {
+    super({
+      serverSettings: options.serverSettings
+    });
   }
 
-  get ready(): Promise<void> {
-    return this._ready.promise;
-  }
-
-  async initialize() {
-    this._ready.resolve(void 0);
-  }
-
-  // copied from the original settings
-  async get(pluginId: string): Promise<ISettingsPlugin | undefined> {
-    const all = await this.getAll();
-    const settings = all.settings as ISettingsPlugin[];
-    const setting = settings.find((setting: ISettingsPlugin) => {
+  // copied from the original settings (updated)
+  async fetch(pluginId: string): Promise<ISettingRegistry.IPlugin> {
+    const all = await this.list();
+    const settings = all.values as ISettingRegistry.IPlugin[];
+    const setting = settings.find((setting: ISettingRegistry.IPlugin) => {
       return setting.id === pluginId;
     });
+    if (!setting) {
+      throw new Error(`Setting ${pluginId} not found`);
+    }
     return setting;
   }
 
-  // copied from the original settings
-  async getAll(): Promise<{ settings: ISettingsPlugin[] }> {
+  // copied from the original settings (updated)
+  async list(
+    query?: 'ids'
+  ): Promise<{ ids: string[]; values: ISettingRegistry.IPlugin[] }> {
     const allCore = await this._getAll('all.json');
-    let allFederated: ISettingsPlugin[] = [];
+    let allFederated: ISettingRegistry.IPlugin[] = [];
     try {
       allFederated = await this._getAll('all_federated.json');
     } catch {
@@ -78,23 +80,35 @@ export class FailsSettings implements ISettings {
         };
       })
     );
-    return { settings };
+
+    // format the settings
+    const ids =
+      settings.map((plugin: ISettingRegistry.IPlugin) => plugin.id) ?? [];
+
+    let values: ISettingRegistry.IPlugin[] = [];
+    if (!query) {
+      values =
+        settings.map((plugin: ISettingRegistry.IPlugin) => {
+          plugin.data = { composite: {}, user: {} };
+          return plugin;
+        }) ?? [];
+    }
+
+    return { ids, values };
   }
 
   // one to one copy from settings of the original JupyterLite
   private async _getAll(
-    file: 'all.json' | 'all_federated.json'
-  ): Promise<ISettingsPlugin[]> {
+    file: SettingsFile
+  ): Promise<ISettingRegistry.IPlugin[]> {
     const settingsUrl = PageConfig.getOption('settingsUrl') ?? '/';
     const all = (await (
       await fetch(URLExt.join(settingsUrl, file))
-    ).json()) as ISettingsPlugin[];
+    ).json()) as ISettingRegistry.IPlugin[];
     return all;
   }
 
-  async save(pluginId: string, raw: string): Promise<void> {
+  async save(id: string, raw: string): Promise<void> {
     // we do nothing
   }
-
-  private _ready: PromiseDelegate<void>;
 }
