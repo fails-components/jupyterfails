@@ -83,15 +83,15 @@ export class AppletWidgetRegistry implements IAppletWidgetRegistry {
     }
   }
 
-  getModelId(path: string) {
+  getModelId(path: string): string | undefined {
     return this._pathToModelId[path];
   }
 
-  getModel(path: string) {
+  getModel(path: string): WidgetModel | undefined {
     return this._pathToModel[path];
   }
 
-  getPath(modelId: string) {
+  getPath(modelId: string): string | undefined {
     return this._modelIdToPath[modelId];
   }
 
@@ -169,6 +169,10 @@ function activateWidgetInterceptor(
       ) => {
         // const modelId = wRegistry.getModelId(args.path);
         const model = wRegistry.getModel(args.path);
+        if (!model) {
+          // just skip
+          return;
+        }
         const state = await (
           model.constructor as typeof WidgetModel
         )._deserialize_state(args.state, model.widget_manager);

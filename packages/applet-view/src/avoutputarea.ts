@@ -205,6 +205,9 @@ export class AppletViewOutputArea extends AccordionPanel {
     }
     const app = this.widgets[appIndex] as Panel;
     const clone = this.cloneCell(cell, cellid);
+    clone.node.addEventListener('contextmenu', e => {
+      e.preventDefault();
+    });
     this.addToObserver(appIndex, clone);
     app.addWidget(clone);
 
