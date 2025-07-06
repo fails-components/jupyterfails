@@ -2,6 +2,22 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.4
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.3...2d4b3390df54c6d598d6dc8e1ae302dff4569928))
+
+### Maintenance and upkeep improvements
+
+- Fix versions [#22](https://github.com/fails-components/jupyterfails/pull/22) ([@martenrichter](https://github.com/martenrichter))
+
+### Contributors to this release
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-07-05&to=2025-07-06&type=c))
+
+[@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-07-05..2025-07-06&type=Issues)
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.3
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.2...10685e00243fa8cfcab4de083e6d301960bcc6e6))
@@ -15,8 +31,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-06-22&to=2025-07-05&type=c))
 
 [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-06-22..2025-07-05&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.2
 
