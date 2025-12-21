@@ -51,8 +51,8 @@
         "watch:labextension": "lerna exec --no-private --stream jupyter labextension watch ."
     },
     "devDependencies": {
-        "@jupyterlab/builder": "^4.0.0",
-        "@jupyterlab/testutils": "^4.0.0",
+        "@jupyterlab/builder": "^4.5.1",
+        "@jupyterlab/testutils": "^4.5.1",
         "@types/jest": "^29.2.0",
         "@types/json-schema": "^7.0.11",
         "@types/react": "^18.0.26",
@@ -77,6 +77,5 @@
         "stylelint-prettier": "^4.0.0",
         "typescript": "~5.0.2",
         "yjs": "^13.5.0"
-    },
-    "packageManager": "yarn@3.5.0"
+    }
 }

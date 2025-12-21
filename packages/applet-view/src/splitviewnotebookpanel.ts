@@ -140,8 +140,7 @@ export class SplitViewNotebookPanel
   private _failsLauncherInfo: IFailsLauncherInfo | undefined;
 }
 namespace SplitViewNotebookWidgetFactory {
-  export interface IOptions
-    extends NotebookWidgetFactory.IOptions<NotebookPanel> {
+  export interface IOptions extends NotebookWidgetFactory.IOptions<NotebookPanel> {
     failsLauncherInfo?: IFailsLauncherInfo;
     failsInterceptor?: IFailsInterceptor;
   }
