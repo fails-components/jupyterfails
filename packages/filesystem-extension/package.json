@@ -60,16 +60,16 @@
         "watch:labextension": "jupyter labextension watch ."
     },
     "dependencies": {
-        "@jupyterlab/coreutils": "^6.4.3",
-        "@jupyterlab/services": "^7.4.3",
-        "@jupyterlab/settingregistry": "^4.4.3",
-        "@lumino/coreutils": "^2.2.1",
-        "@lumino/signaling": "^2.1.4",
+        "@jupyterlab/coreutils": "^6.5.1",
+        "@jupyterlab/services": "^7.5.1",
+        "@jupyterlab/settingregistry": "^4.5.1",
+        "@lumino/coreutils": "^2.2.2",
+        "@lumino/signaling": "^2.1.5",
         "json5": "^2.2.3"
     },
     "devDependencies": {
-        "@jupyterlab/builder": "^4.0.0",
-        "@jupyterlab/testutils": "^4.0.0",
+        "@jupyterlab/builder": "^4.5.1",
+        "@jupyterlab/testutils": "^4.5.1",
         "@types/jest": "^29.2.0",
         "@types/json-schema": "^7.0.11",
         "@types/react": "^18.0.26",

@@ -127,3 +127,6 @@ dmypy.json
 #jupyterlite output
 jupyterLiteFailsOut
 .jupyterlite.doit.db
+
+.nx/
+examples/*/_output*
