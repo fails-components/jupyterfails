@@ -2,6 +2,29 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 0.0.5
+
+([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.4...0c183ebaa5ffa8b5447df57b5df99a73900d1b81))
+
+### Bugs fixed
+
+- Fix publish-release [#25](https://github.com/fails-components/jupyterfails/pull/25) ([@martenrichter](https://github.com/martenrichter))
+
+### Maintenance and upkeep improvements
+
+- Switch to Jupyter Lite 0.7.1 and related versions [#24](https://github.com/fails-components/jupyterfails/pull/24) ([@martenrichter](https://github.com/martenrichter))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-07-06&to=2025-12-21&type=c))
+
+@martenrichter ([activity](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-07-06..2025-12-21&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 0.0.4
 
 ([Full Changelog](https://github.com/fails-components/jupyterfails/compare/@fails-components/jupyter-applet-view@0.0.3...2d4b3390df54c6d598d6dc8e1ae302dff4569928))
@@ -15,8 +38,6 @@
 ([GitHub contributors page for this release](https://github.com/fails-components/jupyterfails/graphs/contributors?from=2025-07-05&to=2025-07-06&type=c))
 
 [@martenrichter](https://github.com/search?q=repo%3Afails-components%2Fjupyterfails+involves%3Amartenrichter+updated%3A2025-07-05..2025-07-06&type=Issues)
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 0.0.3
 
