@@ -565,7 +565,7 @@ function activateFailsLauncher(
             .then(() => {
               // ok the file is placed inside the file system now load it into the app
               const kernel: Partial<Kernel.IModel> = {
-                name: loadJupyterInfo.kernelName || 'python' // 'xpython' for xeus
+                name: loadJupyterInfo.kernelName || 'xpython' // 'xpython' for xeus
               };
               const defaultFactory = docRegistry.defaultWidgetFactory(
                 loadJupyterInfo.fileName
