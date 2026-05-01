@@ -1,29 +1,27 @@
-import {
-  LabWidgetManager,
-  WidgetRenderer
-} from '@jupyter-widgets/jupyterlab-manager';
-import { Cell, CodeCell } from '@jupyterlab/cells';
-import { CellList, NotebookPanel } from '@jupyterlab/notebook';
-import { IOutputAreaModel, OutputArea } from '@jupyterlab/outputarea';
-import { ITranslator, nullTranslator } from '@jupyterlab/translation';
+import type { LabWidgetManager } from '@jupyter-widgets/jupyterlab-manager';
+import { WidgetRenderer } from '@jupyter-widgets/jupyterlab-manager';
+import type { Cell, CodeCell } from '@jupyterlab/cells';
+import type { CellList, NotebookPanel } from '@jupyterlab/notebook';
+import type { IOutputAreaModel, OutputArea } from '@jupyterlab/outputarea';
+import type { ITranslator } from '@jupyterlab/translation';
+import { nullTranslator } from '@jupyterlab/translation';
 import { notebookIcon } from '@jupyterlab/ui-components';
 import { ArrayExt } from '@lumino/algorithm';
 import { UUID } from '@lumino/coreutils';
-import { ISignal, Signal } from '@lumino/signaling';
-import {
-  AccordionPanel,
+import type { ISignal } from '@lumino/signaling';
+import { Signal } from '@lumino/signaling';
+import type {
   Widget,
-  Panel,
-  BoxLayout,
   PanelLayout,
   AccordionLayout,
   Title
 } from '@lumino/widgets';
-import { MainAreaWidget } from '@jupyterlab/apputils';
+import { AccordionPanel, Panel, BoxLayout } from '@lumino/widgets';
+import type { MainAreaWidget } from '@jupyterlab/apputils';
 import { domToBlob } from 'modern-screenshot';
-import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
-import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
-import { IScreenShotOpts } from '@fails-components/jupyter-launcher';
+import type { SplitViewNotebookPanel } from './splitviewnotebookpanel';
+import type { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
+import type { IScreenShotOpts } from '@fails-components/jupyter-launcher';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -72,7 +70,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       this.addApplet({ appid, appname: 'Applet 1' });
     }
     this.id = `AppletView-${UUID.uuid4()}`;
-    this.title.label = 'Applet area';
+    this.title.label = 'Applet area'; // eslint-disable-line jupyter/no-untranslated-string
     this.title.icon = notebookIcon;
     this.title.caption = this._notebook.title.label
       ? trans.__('For Notebook: %1', this._notebook.title.label)
@@ -625,7 +623,7 @@ export class AppletViewOutputArea extends AccordionPanel {
       return blob;
     } catch (error) {
       //only throw if not returned
-      console.log('takeAppScreenshot error', error);
+      console.error('takeAppScreenshot error', error);
     }
   }
 

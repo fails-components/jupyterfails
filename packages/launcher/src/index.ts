@@ -1,24 +1,27 @@
-import {
-  ILabStatus,
+import type {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
+import { ILabStatus } from '@jupyterlab/application';
 import { IDocumentManager } from '@jupyterlab/docmanager';
-import { Kernel } from '@jupyterlab/services';
-import { ISessionContext, ILicensesClient } from '@jupyterlab/apputils';
-import { IDocumentWidget } from '@jupyterlab/docregistry';
+import type { Kernel } from '@jupyterlab/services';
+import type { ISessionContext } from '@jupyterlab/apputils';
+import { ILicensesClient } from '@jupyterlab/apputils';
+import type { IDocumentWidget } from '@jupyterlab/docregistry';
 import { INotebookShell } from '@jupyter-notebook/application';
-import { NotebookActions, NotebookPanel } from '@jupyterlab/notebook';
-import { JSONObject } from '@lumino/coreutils';
-import { ISignal, Signal } from '@lumino/signaling';
-import { Panel } from '@lumino/widgets';
+import type { NotebookPanel } from '@jupyterlab/notebook';
+import { NotebookActions } from '@jupyterlab/notebook';
+import type { JSONObject } from '@lumino/coreutils';
+import type { ISignal } from '@lumino/signaling';
+import { Signal } from '@lumino/signaling';
+import type { Panel } from '@lumino/widgets';
 import { IFailsDriveMessages } from '@fails-components/jupyter-filesystem-extension';
-import {
-  IFailsLauncherInfo,
+import type {
   IFailsAppletSize,
   IAppletWidgetRegistry,
   IFailsInterceptorUpdateMessage
 } from './tokens';
+import { IFailsLauncherInfo } from './tokens';
 
 export * from './tokens';
 
@@ -220,6 +223,7 @@ const installFetchPatches = ({
         return oldFetch(urlObj, options);
       }
     }
+    // eslint-disable-next-line no-console
     console.log('alien fetch URL:', urlObj.href);
     return new Response('Blocked domain, access forbidden', {
       status: 403,
@@ -249,9 +253,10 @@ const installFetchPatches = ({
     const scriptURL =
       script instanceof URL ? script : new URL(script, location.href);
     if (!allowedOrigins.includes(scriptURL.origin)) {
-      console.log('Creating worker from blocked origin:', scriptURL.origin);
+      console.warn('Creating worker from blocked origin:', scriptURL.origin);
       return;
     }
+    // eslint-disable-next-line no-console
     console.log('Tap into creating worker:', scriptURL.href);
     const injectPrefix = `(function() {
       const allowedOrigins = [ ${allowedOriginsString} ];
@@ -266,6 +271,7 @@ const installFetchPatches = ({
         if (proxySites && proxySites.includes(urlObj.origin)) {
            // rewrite the URL and response
           const resURL = proxyURL + urlObj.hostname + urlObj.pathname;
+          // eslint-disable-next-line no-console
           console.log('proxy url debug', resURL, urlObj.href);
           if (url instanceof Request) {
             const request = url;
@@ -283,6 +289,7 @@ const installFetchPatches = ({
               referrer: request.referrer,
               signal: request.signal
           });
+          // eslint-disable-next-line no-console
           console.log('proxy request debug', newRequest, request);
           return oldFetch(newRequest, options);
         } else {
@@ -290,6 +297,7 @@ const installFetchPatches = ({
           return oldFetch(urlObj, options);
         }
       }
+      // eslint-disable-next-line no-console
       console.log('alien fetch URL worker:', urlObj.href);
       return new Response('Blocked domain, access forbidden',{
         status: 403,
@@ -565,7 +573,7 @@ function activateFailsLauncher(
             .then(() => {
               // ok the file is placed inside the file system now load it into the app
               const kernel: Partial<Kernel.IModel> = {
-                name: loadJupyterInfo.kernelName || 'python' // 'xpython' for xeus
+                name: loadJupyterInfo.kernelName || 'xpython' // 'xpython' for xeus
               };
               const defaultFactory = docRegistry.defaultWidgetFactory(
                 loadJupyterInfo.fileName
@@ -592,6 +600,7 @@ function activateFailsLauncher(
                       status
                     });
                     if (status === 'idle' && rerunAfterKernelStart) {
+                      // eslint-disable-next-line no-console
                       console.log('Run all cells after startup');
                       const { context, content } = notebookPanel;
                       const cells = content.widgets;
@@ -601,9 +610,11 @@ function activateFailsLauncher(
                         context.sessionContext
                       )
                         .then(() => {
+                          // eslint-disable-next-line no-console
                           console.log('Run all cells after startup finished');
                         })
                         .catch(error => {
+                          // eslint-disable-next-line no-console
                           console.log(
                             'Run all cells after startup error',
                             error
@@ -617,7 +628,7 @@ function activateFailsLauncher(
               }
             })
             .catch((error: any) => {
-              console.log('Problem task load file', error);
+              console.error('Problem task load file', error);
             });
         }
         break;
@@ -717,7 +728,7 @@ function activateFailsLauncher(
               }
             })
             .catch((error: Error) => {
-              console.log('Screenshot error', error);
+              console.error('Screenshot error', error);
               postMessageToFails!({
                 requestId: event.data.requestId,
                 task: 'screenshotApp',
@@ -777,7 +788,6 @@ function activateFailsLauncher(
           const notebookPanel = currentDocWidget as NotebookPanel;
           const { context, content } = notebookPanel;
           const cells = content.widgets;
-          console.log('rerun kernel hook');
 
           notebookPanel.sessionContext
             .restartKernel()

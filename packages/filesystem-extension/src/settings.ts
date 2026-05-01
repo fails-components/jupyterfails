@@ -1,6 +1,7 @@
 import { PageConfig, URLExt } from '@jupyterlab/coreutils';
-import { Setting, SettingManager } from '@jupyterlab/services';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import type { Setting } from '@jupyterlab/services';
+import { SettingManager } from '@jupyterlab/services';
+import type { ISettingRegistry } from '@jupyterlab/settingregistry';
 import * as json5 from 'json5';
 
 // portions used from Jupyterlab:

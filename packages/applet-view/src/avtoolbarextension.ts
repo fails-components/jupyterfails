@@ -1,18 +1,16 @@
-import {
-  ToolbarRegistry,
-  createDefaultFactory,
-  setToolbar
-} from '@jupyterlab/apputils';
-import { DocumentRegistry } from '@jupyterlab/docregistry';
-import { IObservableList, ObservableList } from '@jupyterlab/observables';
-import { CommandRegistry } from '@lumino/commands';
-import { IDisposable } from '@lumino/disposable';
-import { PanelLayout, Widget } from '@lumino/widgets';
-import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
-import { AppletViewOutputArea, IViewPart } from './avoutputarea';
+import type { ToolbarRegistry } from '@jupyterlab/apputils';
+import { createDefaultFactory, setToolbar } from '@jupyterlab/apputils';
+import type { DocumentRegistry } from '@jupyterlab/docregistry';
+import type { IObservableList } from '@jupyterlab/observables';
+import { ObservableList } from '@jupyterlab/observables';
+import type { CommandRegistry } from '@lumino/commands';
+import type { IDisposable } from '@lumino/disposable';
+import type { PanelLayout, Widget } from '@lumino/widgets';
+import type { SplitViewNotebookPanel } from './splitviewnotebookpanel';
+import type { AppletViewOutputArea, IViewPart } from './avoutputarea';
 import { Toolbar } from '@jupyterlab/ui-components';
 import { Signal } from '@lumino/signaling';
-import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
+import type { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -185,7 +183,6 @@ export class AppletViewToolbarTracker implements IDisposable {
       const doAddToolbar = (part: IViewPart) => {
         const clone = part.clone;
         if (clone) {
-          // eslint-disable-next-line no-constant-condition
           const toolbarWidget = new Toolbar();
           this._toolbars.set(part, toolbarWidget);
           this._toolbarStore.push(toolbarWidget);
@@ -204,7 +201,6 @@ export class AppletViewToolbarTracker implements IDisposable {
           const clone = part.clone;
           if (!this._toolbars.has(part)) {
             if (clone) {
-              // eslint-disable-next-line no-constant-condition
               doAddToolbar(part);
             } else {
               // we have to defer it

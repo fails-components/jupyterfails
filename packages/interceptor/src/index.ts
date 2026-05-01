@@ -1,32 +1,26 @@
-import {
-  INotebookTracker,
-  NotebookPanel,
-  INotebookModel
-} from '@jupyterlab/notebook';
-import {
+import type { NotebookPanel, INotebookModel } from '@jupyterlab/notebook';
+import { INotebookTracker } from '@jupyterlab/notebook';
+import type {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
-import { IWidgetManager, WidgetModel } from '@jupyter-widgets/base';
-import {
+import type { IWidgetManager, WidgetModel } from '@jupyter-widgets/base';
+import type {
   IExecuteResult,
   IDisplayData,
   IDisplayUpdate
 } from '@jupyterlab/nbformat';
-import {
-  IRenderMime,
-  IRenderMimeRegistry,
-  RenderMimeRegistry
-} from '@jupyterlab/rendermime';
-import { ICellModel } from '@jupyterlab/cells';
-import { ISharedCodeCell } from '@jupyter/ydoc';
-import { JSONObject, PromiseDelegate } from '@lumino/coreutils';
-import { Kernel /*, KernelMessage */ } from '@jupyterlab/services';
-import {
+import type { IRenderMime, RenderMimeRegistry } from '@jupyterlab/rendermime';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import type { ICellModel } from '@jupyterlab/cells';
+import type { ISharedCodeCell } from '@jupyter/ydoc';
+import type { JSONObject, PromiseDelegate } from '@lumino/coreutils';
+import type { Kernel /*, KernelMessage */ } from '@jupyterlab/services';
+import type {
   IFailsInterceptorUpdateMessage,
-  IAppletWidgetRegistry,
-  IFailsLauncherInfo
+  IAppletWidgetRegistry
 } from '@fails-components/jupyter-launcher';
+import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
 import { Signal } from '@lumino/signaling';
 import { IFailsInterceptor } from './tokens';
 
@@ -200,7 +194,7 @@ function activateWidgetInterceptor(
         mime
       ) as IRenderMime.IRendererFactory;
       if (!factory) {
-        console.log(
+        console.warn(
           'Plotly seems to be not installed! So I can not add an interceptor'
         );
         return;
@@ -211,12 +205,12 @@ function activateWidgetInterceptor(
         options: IRenderMime.IRendererOptions
       ) {
         const renderer = createRendererOld(options);
-        console.log('intercepted renderer', mime, renderer, renderer.node);
+        // console.log('intercepted renderer', mime, renderer, renderer.node);
         // we have also the replace renderModel
         const renderModelOld = renderer.renderModel.bind(renderer);
         renderer.renderModel = async (model: IRenderMime.IMimeModel) => {
           let result = await renderModelOld(model);
-          console.log('intercepted renderer model', model);
+          // console.log('intercepted renderer model', model);
           if (!(<any>renderer).hasGraphElement()) {
             result = await (renderer as any).createGraph(
               (renderer as any)?._model
@@ -241,32 +235,21 @@ function activateWidgetInterceptor(
                     state: data
                   });
                 }
+                /*
                 console.log(
                   'plotly',
                   mess,
                   data,
                   model.metadata?.appPath,
                   path
-                );
+                ); */
               });
             });
           }
-          console.log(
-            'renderer layout rM',
-            // @ts-expect-error plotly
-            renderer.node.layout,
-            // @ts-expect-error plotly
-            !!renderer.node.on,
-            renderer
-          );
-          //@ts-expect-error result is different from void
-          console.log('renderer result', result, !!result?.on);
 
           return result;
         };
         // special code for plotly
-        // @ts-expect-error plotly
-        console.log('renderer layout', renderer.node.layout);
         /* if (!(renderer as any).hasGraphElement()) {
             (renderer as any).createGraph((renderer as any)['_model]']);
           } */
@@ -433,10 +416,6 @@ function activateWidgetInterceptor(
                             mimebundle['application/vnd.plotly.v1+json'] &&
                             false
                           ) {
-                            const bundle =
-                              mimebundle['application/vnd.plotly.v1+json'];
-                            console.log('Plotly bundle', bundle);
-                            console.log('plotly cell', cell);
                             if ((<any>result.metadata).appPath !== appPath) {
                               (<any>result.metadata).appPath = appPath;
                               addPath = true;

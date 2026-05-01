@@ -1,5 +1,7 @@
-import { Contents, Drive, ServerConnection } from '@jupyterlab/services';
-import { ISignal, Signal } from '@lumino/signaling';
+import type { Contents, Drive } from '@jupyterlab/services';
+import { ServerConnection } from '@jupyterlab/services';
+import type { ISignal } from '@lumino/signaling';
+import { Signal } from '@lumino/signaling';
 
 interface IContentEvent {
   task: string;

@@ -1,5 +1,5 @@
 import { Token } from '@lumino/coreutils';
-import { IContentEventType } from './drive';
+import type { IContentEventType } from './drive';
 
 export type IFailsDriveMessageHandler = (
   msg: IContentEventType

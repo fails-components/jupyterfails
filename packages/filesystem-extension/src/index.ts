@@ -1,15 +1,19 @@
-import {
-  IDefaultDrive,
+import type {
   Contents,
   ServerConnection,
   Setting,
-  ISettingManager,
-  IServerSettings,
   ServiceManagerPlugin
 } from '@jupyterlab/services';
-import { FailsDrive, IContentEventType } from './drive';
+import {
+  IDefaultDrive,
+  ISettingManager,
+  IServerSettings
+} from '@jupyterlab/services';
+import type { IContentEventType } from './drive';
+import { FailsDrive } from './drive';
 import { FailsSettings } from './settings';
-import { IFailsDriveMessageHandler, IFailsDriveMessages } from './token';
+import type { IFailsDriveMessageHandler } from './token';
+import { IFailsDriveMessages } from './token';
 
 export * from './token';
 
@@ -18,6 +22,8 @@ const failsDriveMessages: ServiceManagerPlugin<IFailsDriveMessages> = {
   requires: [],
   autoStart: true,
   provides: IFailsDriveMessages,
+  description:
+    'IFailsDriveMessages interface to send/receive messages for the drive',
   activate: (_: null) => {
     let initialWaitRes: ((val: unknown) => void) | undefined;
     const initialWait = new Promise(resolve => (initialWaitRes = resolve));
@@ -44,6 +50,8 @@ const failsDrivePlugin: ServiceManagerPlugin<Contents.IDrive> = {
   requires: [IFailsDriveMessages],
   autoStart: true,
   provides: IDefaultDrive,
+  description:
+    'Supplies a drive object for Jupyter lite to be fed from outisde the iframe',
   activate: (_: null, driveMessages: IFailsDriveMessages) => {
     const drive = new FailsDrive({});
     driveMessages.registerMessageHandler(msg => drive.onMessage(msg));
@@ -57,6 +65,7 @@ const failsSettingsPlugin: ServiceManagerPlugin<Setting.IManager> = {
   autoStart: true,
   provides: ISettingManager,
   optional: [IServerSettings],
+  description: 'ISettingsManager from the IFrame embeeded Jupyter',
   activate: (_: null, serverSettings: ServerConnection.ISettings | null) => {
     const settings = new FailsSettings({
       serverSettings: serverSettings ?? undefined
