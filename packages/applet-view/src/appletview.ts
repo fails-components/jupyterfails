@@ -1,14 +1,15 @@
-import { JupyterFrontEnd, ILayoutRestorer } from '@jupyterlab/application';
-import { Cell } from '@jupyterlab/cells';
-import { IDocumentManager } from '@jupyterlab/docmanager';
-import {
+/* eslint-disable jupyter/no-untranslated-string */
+import type { JupyterFrontEnd, ILayoutRestorer } from '@jupyterlab/application';
+import type { Cell } from '@jupyterlab/cells';
+import type { IDocumentManager } from '@jupyterlab/docmanager';
+import type {
   INotebookTracker,
   NotebookWidgetFactory,
   NotebookTracker,
   NotebookPanel
 } from '@jupyterlab/notebook';
-import { RestorablePool } from '@jupyterlab/statedb';
-import { ITranslator } from '@jupyterlab/translation';
+import type { RestorablePool } from '@jupyterlab/statedb';
+import type { ITranslator } from '@jupyterlab/translation';
 import {
   addIcon,
   moveUpIcon,
@@ -17,11 +18,11 @@ import {
   caretDownIcon,
   deleteIcon
 } from '@jupyterlab/ui-components';
-import { ReadonlyPartialJSONObject } from '@lumino/coreutils';
+import type { ReadonlyPartialJSONObject } from '@lumino/coreutils';
 import { SplitViewNotebookWidgetFactory } from './splitviewnotebookpanel';
-import { SplitViewNotebookPanel } from './splitviewnotebookpanel';
-import { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
-import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
+import type { SplitViewNotebookPanel } from './splitviewnotebookpanel';
+import type { IFailsLauncherInfo } from '@fails-components/jupyter-launcher';
+import type { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------
@@ -42,6 +43,7 @@ export function activateAppletView(
   if (app.namespace === 'JupyterLite Server') {
     return;
   }
+  // eslint-disable-next-line no-console
   console.log(
     'JupyterLab extension @fails-components/jupyter-applet-view is activated!'
   );
@@ -210,6 +212,12 @@ export function activateAppletView(
 
   commands.addCommand(addToViewID, {
     label: /* trans.__(*/ 'Add Output to first Applet view' /*)*/,
+    describedBy: {
+      args: {
+        type: 'object',
+        properties: {}
+      }
+    },
     execute: async args => {
       const path = args.path as string | undefined | null;
       let index = args.index as number | undefined | null;
@@ -329,6 +337,12 @@ export function activateAppletView(
     */
   commands.addCommand(moveViewUpID, {
     label: /* trans.__(*/ 'Move view up' /*)*/,
+    describedBy: {
+      args: {
+        type: 'object',
+        properties: {}
+      }
+    },
     execute: async args => {
       moveWidgets(args, -1);
     },
@@ -338,6 +352,12 @@ export function activateAppletView(
   });
   commands.addCommand(moveViewDownID, {
     label: /* trans.__(*/ 'Move view down' /*)*/,
+    describedBy: {
+      args: {
+        type: 'object',
+        properties: {}
+      }
+    },
     execute: async args => {
       moveWidgets(args, 1);
     },
@@ -347,6 +367,12 @@ export function activateAppletView(
   });
   commands.addCommand(moveViewAppUpID, {
     label: /* trans.__(*/ 'Move view up to other app' /*)*/,
+    describedBy: {
+      args: {
+        type: 'object',
+        properties: {}
+      }
+    },
     execute: async args => {
       moveWidgetsApp(args, -1);
     },
@@ -359,6 +385,12 @@ export function activateAppletView(
   });
   commands.addCommand(moveViewAppDownID, {
     label: /* trans.__(*/ 'Move view down to other app' /*)*/,
+    describedBy: {
+      args: {
+        type: 'object',
+        properties: {}
+      }
+    },
     execute: async args => {
       moveWidgetsApp(args, 1);
     },
@@ -372,6 +404,12 @@ export function activateAppletView(
 
   commands.addCommand(deleteViewID, {
     label: /* trans.__(*/ 'Delete view' /*)*/,
+    describedBy: {
+      args: {
+        type: 'object',
+        properties: {}
+      }
+    },
     execute: async args => {
       const current = getCurrentNotebook(args);
       if (!current) {

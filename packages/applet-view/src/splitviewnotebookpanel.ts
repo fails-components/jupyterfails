@@ -1,20 +1,23 @@
-import { DocumentRegistry, DocumentWidget } from '@jupyterlab/docregistry';
-import {
-  NotebookPanel,
+import type { DocumentRegistry, DocumentWidget } from '@jupyterlab/docregistry';
+import type {
   Notebook,
   INotebookModel,
-  NotebookHistory,
-  NotebookWidgetFactory,
   StaticNotebook
 } from '@jupyterlab/notebook';
-import { BoxLayout, AccordionPanel, AccordionLayout } from '@lumino/widgets';
-import { AppletViewOutputArea } from './avoutputarea';
 import {
+  NotebookPanel,
+  NotebookHistory,
+  NotebookWidgetFactory
+} from '@jupyterlab/notebook';
+import type { AccordionLayout } from '@lumino/widgets';
+import { BoxLayout, AccordionPanel } from '@lumino/widgets';
+import { AppletViewOutputArea } from './avoutputarea';
+import type {
   IFailsLauncherInfo,
   IAppletScreenshottaker,
   IScreenShotOpts
 } from '@fails-components/jupyter-launcher';
-import { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
+import type { IFailsInterceptor } from '@fails-components/jupyter-interceptor';
 
 interface IAppletResizeEvent {
   appid: string;

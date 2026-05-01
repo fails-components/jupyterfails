@@ -1,8 +1,8 @@
-import {
-  ILayoutRestorer,
+import type {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
+import { ILayoutRestorer } from '@jupyterlab/application';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { ITranslator } from '@jupyterlab/translation';
 import { INotebookTracker } from '@jupyterlab/notebook';

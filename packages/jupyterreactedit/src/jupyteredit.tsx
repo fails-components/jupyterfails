@@ -1,3 +1,4 @@
+/* eslint-disable jupyter/no-untranslated-string */
 /*
     BSD 3-Clause License
 
@@ -30,7 +31,7 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 import React, { Component, Fragment } from 'react';
-import {
+import type {
   IJupyterToFailsMessage,
   IFailsToJupyterMessage,
   IInterceptorUpdate,
@@ -40,7 +41,7 @@ import {
   IFailsAppletSize,
   IGDPRProxyInfo
 } from '@fails-components/jupyter-launcher';
-import { JSONObject, PartialJSONObject } from '@lumino/coreutils';
+import type { JSONObject, PartialJSONObject } from '@lumino/coreutils';
 import '../style/index.css';
 
 interface IJupyterState {
@@ -355,11 +356,12 @@ export class JupyterEdit extends Component<
             this._iframe = el;
           }}
           onLoad={() => {
+            // eslint-disable-next-line no-console
             console.log('Jupyter iframe loaded');
           }}
           allow=""
           // @ts-expect-error credentialless
-          credentialless="true"
+          credentialless="true" // eslint-disable-line react/no-unknown-property
           sandbox="allow-scripts allow-downloads allow-same-origin allow-popups" // we need allow-forms for a local jupyter server, remove for jupyterlite
           title="jupyteredit"
         ></iframe>
