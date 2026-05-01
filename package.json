@@ -46,7 +46,7 @@
         "stylelint": "lerna run stylelint --no-private",
         "stylelint:check": "lerna run stylelint:check --no-private",
         "test": "lerna run test --no-private",
-        "versionlerna": "f() { npx -p lerna@6.6.2 -y lerna version --no-git-tag-version --no-push --force-publish -y \"$1\" || exit 1; }; f",
+        "versionlerna": "f() { npx -p lerna@9.0.7 -y lerna version --no-git-tag-version --no-push --force-publish -y \"$1\" || exit 1; }; f",
         "watch": "run-p watch:src watch:labextension",
         "watch:src": "lerna exec --stream --parallel tsc -w --sourceMap --no-private",
         "watch:labextension": "lerna exec --no-private --stream jupyter labextension watch ."
@@ -67,8 +67,7 @@
         "eslint-config-prettier": "^8.8.0",
         "eslint-plugin-prettier": "^5.0.0",
         "eslint-plugin-react": "^7.37.0",
-        "jest": "^29.2.0",
-        "lerna": "^6.6.2",
+        "lerna": "^9.0.7",
         "npm-run-all": "^4.1.5",
         "prettier": "^3.0.0",
         "rimraf": "^5.0.1",

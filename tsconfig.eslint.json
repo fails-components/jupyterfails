@@ -8,8 +8,6 @@
       "packages/**/style/**/*",
       "packages/**/*.config.js",
       "py/**/src/**/*",
-      "scripts/*",
-      "ui-tests/test/**/*",
-      "ui-tests/*.config.js"
+      "scripts/*"
     ]
   }
