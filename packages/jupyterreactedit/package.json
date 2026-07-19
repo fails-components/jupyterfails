@@ -55,7 +55,7 @@
         "watch:src": "tsc -w --sourceMap"
     },
     "devDependencies": {
-        "@fails-components/jupyter-launcher": "^0.0.5",
+        "@fails-components/jupyter-launcher": "0.0.5",
         "@jupyter/eslint-plugin": "0.0.5",
         "@stylistic/eslint-plugin": "^5.10.0",
         "@types/jest": "^29.2.0",
