@@ -154,8 +154,7 @@ const installScreenShotPatches = () => {
   HTMLCanvasElement.prototype.getContext = function (
     contexttype: string,
     contextAttributes?:
-      | CanvasRenderingContext2DSettings
-      | WebGLContextAttributes
+      CanvasRenderingContext2DSettings | WebGLContextAttributes
   ) {
     if (contexttype === 'webgl' || contexttype === 'webgl2') {
       const newcontext = { ...contextAttributes } as any;
@@ -413,15 +412,13 @@ class FailsLauncherInfo implements IFailsLauncherInfo {
   }
 
   get updateMessageArrived():
-    | ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage>
-    | undefined {
+    ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage> | undefined {
     return this._updateMessageArrived;
   }
 
   set updateMessageArrived(
     updateMessageArrived:
-      | ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage>
-      | undefined
+      ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage> | undefined
   ) {
     this._updateMessageArrived = updateMessageArrived;
   }
@@ -442,8 +439,7 @@ class FailsLauncherInfo implements IFailsLauncherInfo {
   private _selectedAppid: string | undefined;
   private _selectedAppidChanged = new Signal<this, string | undefined>(this);
   private _updateMessageArrived:
-    | ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage>
-    | undefined;
+    ISignal<IAppletWidgetRegistry, IFailsInterceptorUpdateMessage> | undefined;
   private _remoteUpdateMessageArrived: Signal<
     IFailsLauncherInfo,
     IFailsInterceptorUpdateMessage

@@ -175,9 +175,7 @@ export class AppletViewToolbarTracker implements IDisposable {
     const notebookpanel = this._notebookpanel;
 
     if (notebookpanel && !notebookpanel.isDisposed) {
-      const promises: Promise<void>[] = [
-        /*notebookpanel.ready*/
-      ]; // remove area ready
+      const promises: Promise<void>[] = [/*notebookpanel.ready*/]; // remove area ready
       const applets = notebookpanel.appletViewWidget?.applets;
 
       const doAddToolbar = (part: IViewPart) => {

@@ -10,7 +10,7 @@ for dir in ./*/; do
         echo Pip install in $dir
         pip install -ve .
          echo Labextension install in $dir
-        jupyter labextension develop --overwrite .
+        jupyter-builder develop --overwrite .
         cd ..
     fi
 done

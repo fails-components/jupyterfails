@@ -19,8 +19,7 @@ export interface ISavedJupyterContentEvent extends IContentEvent {
 }
 
 export type IContentEventType =
-  | ILoadJupyterContentEvent
-  | ISavedJupyterContentEvent; // use union
+  ILoadJupyterContentEvent | ISavedJupyterContentEvent; // use union
 
 // portions used from Jupyterlab:
 /* -----------------------------------------------------------------------------

@@ -145,9 +145,7 @@ export class JupyterEdit extends Component<
       fileData: data,
       kernelName:
         ((data?.metadata as IDocumentMetadata)?.kernelspec?.name as
-          | 'python'
-          | 'xpython'
-          | undefined) ?? 'python'
+          'python' | 'xpython' | undefined) ?? 'python'
     });
   }
 

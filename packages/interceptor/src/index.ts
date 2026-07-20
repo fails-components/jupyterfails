@@ -395,9 +395,7 @@ function activateWidgetInterceptor(
                       case 'execute_result':
                         {
                           const result = output as
-                            | IExecuteResult
-                            | IDisplayUpdate
-                            | IDisplayData;
+                            IExecuteResult | IDisplayUpdate | IDisplayData;
 
                           // console.log('Mimebundle', result.data); // to do parse this also
                           // console.log('Metadata', result.metadata);
