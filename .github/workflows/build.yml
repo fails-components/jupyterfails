@@ -119,7 +119,7 @@ jobs:
         sudo rm -rf $(which node)
         ls -la
 
-        pip install "jupyterlab>=4.0.0,<5" ${{ matrix.python }}*.whl
+        pip install "jupyterlab>=4.6.0,<5" ${{ matrix.python }}*.whl
 
 
         jupyter labextension list
